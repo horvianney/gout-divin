@@ -1,0 +1,2306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOUT DIVIN - Gestion des Clients</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-green: #2d5016;
+            --secondary-green: #4a7c28;
+            --light-green: #8bc34a;
+            --pale-green: #c8e6c9;
+            --primary-yellow: #ffeb3b;
+            --secondary-yellow: #ffc107;
+            --dark-yellow: #f57c00;
+            --pale-yellow: #fff9c4;
+            --text-dark: #1b1b1b;
+            --text-light: #ffffff;
+            --bg-light: #f5f5f5;
+            --bg-white: #ffffff;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--pale-green) 0%, var(--pale-yellow) 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: var(--text-light);
+            padding: 2rem 0;
+            box-shadow: var(--shadow-hover);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar-nav {
+            padding: 2rem 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        
+        .nav-item.active {
+            background: rgba(255,255,255,0.15);
+            border-left: 4px solid var(--primary-yellow);
+        }
+        
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .nav-item.active .nav-icon {
+            background: var(--primary-yellow);
+            color: var(--primary-green);
+        }
+        
+        .nav-text {
+            flex: 1;
+        }
+        
+        .nav-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .nav-description {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        /* Main Content */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            flex: 1;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: var(--text-light);
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--primary-yellow) 0%, transparent 70%);
+            opacity: 0.3;
+            border-radius: 50%;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary-yellow);
+            color: var(--primary-green);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn.active {
+            background: var(--primary-yellow);
+            color: var(--primary-green);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: var(--primary-yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+        }
+        
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-green), var(--secondary-green));
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .stat-card.highlight::before {
+            background: linear-gradient(90deg, var(--primary-yellow), var(--secondary-yellow));
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--light-green), var(--secondary-green));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card.highlight .stat-icon {
+            background: linear-gradient(135deg, var(--primary-yellow), var(--dark-yellow));
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card.highlight .stat-value {
+            color: var(--dark-yellow);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Section */
+        .section {
+            background: var(--bg-white);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+        
+        .section-content {
+            padding: 1.5rem;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab {
+            padding: 0.75rem 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .tab:hover {
+            color: var(--primary-green);
+            background: var(--pale-green);
+        }
+        
+        .tab.active {
+            color: var(--primary-green);
+            border-bottom-color: var(--primary-green);
+            background: var(--pale-green);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Search and Filters */
+        .search-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--secondary-green);
+            box-shadow: 0 0 0 3px rgba(76, 124, 40, 0.1);
+        }
+        
+        .filter-select {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            background: var(--bg-white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--secondary-green);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: var(--text-light);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-green), var(--light-green));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(76, 124, 40, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--primary-yellow), var(--secondary-yellow));
+            color: var(--primary-green);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, var(--secondary-yellow), var(--dark-yellow));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #d32f2f, #f44336);
+            color: var(--text-light);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #f44336, #e57373);
+            transform: translateY(-2px);
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+        
+        /* Client Cards */
+        .clients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .client-card {
+            background: var(--bg-white);
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .client-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-green), var(--secondary-green));
+        }
+        
+        .client-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--secondary-green);
+        }
+        
+        .client-card.very-active::before {
+            background: linear-gradient(90deg, var(--primary-yellow), var(--secondary-yellow));
+        }
+        
+        .client-card.active::before {
+            background: linear-gradient(90deg, var(--light-green), var(--secondary-green));
+        }
+        
+        .client-card.inactive::before {
+            background: linear-gradient(90deg, #9e9e9e, #757575);
+        }
+        
+        /* Activity Badges */
+        .activity-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        .activity-badge.very-active {
+            background: linear-gradient(135deg, #ff4757, #ff6348);
+            color: white;
+        }
+        
+        .activity-badge.active {
+            background: linear-gradient(135deg, #ffa502, #ff7675);
+            color: white;
+        }
+        
+        .activity-badge.inactive {
+            background: linear-gradient(135deg, #95afc0, #535c68);
+            color: white;
+        }
+        
+        .activity-badge-icon {
+            font-size: 0.8rem;
+        }
+        
+        .client-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        
+        .client-info {
+            flex: 1;
+        }
+        
+        .client-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 0.25rem;
+        }
+        
+        .client-phone {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        
+        .client-email {
+            font-size: 0.75rem;
+            color: #999;
+        }
+        
+        .client-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--light-green), var(--secondary-green));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            font-weight: bold;
+            margin-left: 1rem;
+        }
+        
+        .client-location {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .client-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .client-stat {
+            text-align: center;
+            padding: 0.5rem;
+            background: var(--pale-green);
+            border-radius: 8px;
+        }
+        
+        .client-stat-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+        
+        .client-stat-label {
+            font-size: 0.75rem;
+            color: #666;
+        }
+        
+        .client-activity {
+            margin-bottom: 1rem;
+        }
+        
+        .activity-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .activity-badge.very-active {
+            background: var(--pale-yellow);
+            color: var(--dark-yellow);
+        }
+        
+        .activity-badge.active {
+            background: var(--pale-green);
+            color: var(--primary-green);
+        }
+        
+        .activity-badge.inactive {
+            background: #f5f5f5;
+            color: #666;
+        }
+        
+        .client-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .client-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+        
+        /* Icon Buttons */
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-family: 'Material Icons', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-icon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn-icon.btn-primary {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: var(--text-light);
+        }
+        
+        .btn-icon.btn-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-green), var(--light-green));
+            box-shadow: 0 4px 15px rgba(76, 124, 40, 0.3);
+        }
+        
+        .btn-icon.btn-danger {
+            background: linear-gradient(135deg, #d32f2f, #f44336);
+            color: var(--text-light);
+        }
+        
+        .btn-icon.btn-danger:hover {
+            background: linear-gradient(135deg, #f44336, #e57373);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+        
+        /* Location Groups */
+        .location-groups {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .location-group {
+            background: var(--bg-white);
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .location-group:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--secondary-green);
+        }
+        
+        .location-header {
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: var(--text-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .location-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        
+        .location-count {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+        
+        .location-clients {
+            padding: 1rem;
+        }
+        
+        .location-client-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.3s ease;
+        }
+        
+        .location-client-item:hover {
+            background: var(--pale-green);
+        }
+        
+        .location-client-item:last-child {
+            border-bottom: none;
+        }
+        
+        .location-client-info {
+            flex: 1;
+        }
+        
+        .location-client-name {
+            font-weight: 500;
+            color: var(--primary-green);
+            margin-bottom: 0.25rem;
+        }
+        
+        .location-client-phone {
+            font-size: 0.75rem;
+            color: #666;
+        }
+        
+        .location-client-activity {
+            text-align: right;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--pale-green);
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #666;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: var(--pale-green);
+            color: var(--primary-green);
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .details-table th,
+        .details-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .details-table th {
+            background-color: var(--pale-green);
+            color: var(--primary-green);
+            font-weight: 600;
+        }
+        
+        .details-table tr:hover {
+            background-color: #f9fafb;
+        }
+        
+        .stat-summary {
+            background: var(--pale-green);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .stat-summary-item {
+            text-align: center;
+        }
+        
+        .stat-summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+        
+        .stat-summary-label {
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary-green);
+            box-shadow: 0 0 0 3px rgba(76, 124, 40, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .required {
+            color: var(--dark-yellow);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .header-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .clients-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .location-groups {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-bar {
+                flex-direction: column;
+            }
+            
+            .search-input {
+                min-width: auto;
+            }
+            
+            .client-actions {
+                flex-direction: column;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        /* Success/Error Messages */
+        .message {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow-hover);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .message.success {
+            background: var(--pale-green);
+            color: var(--primary-green);
+            border-left: 4px solid var(--primary-green);
+        }
+        
+        .message.error {
+            background: #ffebee;
+            color: #d32f2f;
+            border-left: 4px solid #d32f2f;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">GD</div>
+                <div class="logo-text">GOUT DIVIN</div>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="gout-divin-dashboard.html" class="nav-item">
+                <div class="nav-icon">«</div>
+                <div class="nav-text">
+                    <div class="nav-title">Dashboard</div>
+                    <div class="nav-description">Vue d'ensemble</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-pos.html" class="nav-item">
+                <div class="nav-icon">+</div>
+                <div class="nav-text">
+                    <div class="nav-title">Point de Vente</div>
+                    <div class="nav-description">Enregistrer les commandes</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-menu.html" class="nav-item">
+                <div class="nav-icon">«</div>
+                <div class="nav-text">
+                    <div class="nav-title">Menu</div>
+                    <div class="nav-description">Gérer les produits</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-stock.html" class="nav-item">
+                <div class="nav-icon">§</div>
+                <div class="nav-text">
+                    <div class="nav-title">Stock</div>
+                    <div class="nav-description">Gérer les ingrédients</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-clients.html" class="nav-item active">
+                <div class="nav-icon">¶</div>
+                <div class="nav-text">
+                    <div class="nav-title">Clients</div>
+                    <div class="nav-description">Gérer la clientèle</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-delivery.html" class="nav-item">
+                <div class="nav-icon">°</div>
+                <div class="nav-text">
+                    <div class="nav-title">Livraisons</div>
+                    <div class="nav-description">Gérer les livraisons</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-reports.html" class="nav-item">
+                <div class="nav-icon">£</div>
+                <div class="nav-text">
+                    <div class="nav-title">Rapports</div>
+                    <div class="nav-description">Exporter les données</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-settings.html" class="nav-item">
+                <div class="nav-icon">®</div>
+                <div class="nav-text">
+                    <div class="nav-title">Paramètres</div>
+                    <div class="nav-description">Configurer le système</div>
+                </div>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div class="container">
+            <!-- Statistics -->
+            <div class="stats-grid fade-in">
+                <div class="stat-card highlight">
+                    <div class="stat-icon">«</div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Total clients</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">§</div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Très actifs</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">÷</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Actifs</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">!</div>
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">Inactifs</div>
+                </div>
+            </div>
+            
+            <!-- Statistics Details Modal -->
+            <div id="statsModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="modalTitle">Détails</h2>
+                        <button class="close-btn" onclick="closeStatsModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="modalContent">
+                            <!-- Content will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Client Management Section -->
+            <div class="section fade-in">
+                <div class="section-header">
+                    <h2 class="section-title">Gestion des Clients</h2>
+                    <button class="btn btn-primary" onclick="openClientModal()">Ajouter un client</button>
+                </div>
+                
+                <div class="section-content">
+                    <!-- Tabs -->
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab('all')">Tous les clients</button>
+                        <button class="tab" onclick="switchTab('by-location')">Par lieu</button>
+                        <button class="tab" onclick="switchTab('by-activity')">Par activité</button>
+                    </div>
+
+                    <!-- All Clients Tab -->
+                    <div id="all-tab" class="tab-content active">
+                        <div class="search-bar">
+                            <input type="text" class="search-input" placeholder="Rechercher un client..." id="searchInput">
+                            <select class="filter-select" id="locationFilter">
+                                <option value="">Tous les lieux</option>
+                            </select>
+                            <select class="filter-select" id="activityFilter">
+                                <option value="">Tous les niveaux d'activité</option>
+                                <option value="very-active">Très actifs</option>
+                                <option value="active">Actifs</option>
+                                <option value="inactive">Inactifs</option>
+                            </select>
+                        </div>
+                        
+                        <div class="clients-grid" id="clientsGrid">
+                            <!-- Client cards will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- By Location Tab -->
+                    <div id="by-location-tab" class="tab-content">
+                        <div class="search-bar">
+                            <input type="text" class="search-input" placeholder="Rechercher un lieu..." id="locationSearchInput">
+                        </div>
+                        
+                        <div class="location-groups" id="locationGroups">
+                            <!-- Location groups will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- By Activity Tab -->
+                    <div id="by-activity-tab" class="tab-content">
+                        <div class="search-bar">
+                            <input type="text" class="search-input" placeholder="Rechercher un client..." id="activitySearchInput">
+                            <select class="filter-select" id="activityLevelFilter">
+                                <option value="">Tous les niveaux</option>
+                                <option value="very-active">Très actifs</option>
+                                <option value="active">Actifs</option>
+                                <option value="inactive">Inactifs</option>
+                            </select>
+                        </div>
+                        
+                        <div class="clients-grid" id="activityClientsGrid">
+                            <!-- Clients sorted by activity will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Client Modal -->
+    <div id="clientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="clientModalTitle">Ajouter un client</h3>
+                <button class="close-btn" onclick="closeClientModal()">&times;</button>
+            </div>
+            
+            <form id="clientForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="clientFirstName">Prénom <span class="required">*</span></label>
+                        <input type="text" id="clientFirstName" required placeholder="Ex: Koffi">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientLastName">Nom <span class="required">*</span></label>
+                        <input type="text" id="clientLastName" required placeholder="Ex: Amouzou">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientPhone">Numéro de téléphone <span class="required">*</span></label>
+                        <input type="tel" id="clientPhone" required placeholder="Ex: +228 90 12 34 56">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientEmail">Adresse email (optionnel)</label>
+                        <input type="email" id="clientEmail" placeholder="ex: email@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientLocation">Lieu <span class="required">*</span></label>
+                        <select id="clientLocation" required>
+                            <option value="">Sélectionner un lieu</option>
+                            <option value="Lomé">Lomé</option>
+                            <option value="Kara">Kara</option>
+                            <option value="Sokodé">Sokodé</option>
+                            <option value="Atakpamé">Atakpamé</option>
+                            <option value="Kpalimé">Kpalimé</option>
+                            <option value="Tsévié">Tsévié</option>
+                            <option value="Aného">Aného</option>
+                            <option value="Bassar">Bassar</option>
+                            <option value="Mango">Mango</option>
+                            <option value="Dapaong">Dapaong</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientCustomLocation">Autre lieu (si "Autre" sélectionné)</label>
+                        <input type="text" id="clientCustomLocation" placeholder="Précisez le lieu...">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="clientNotes">Notes additionnelles</label>
+                    <textarea id="clientNotes" placeholder="Préférences, allergies, remarques spéciales..."></textarea>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeClientModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let clients = [];
+        let sales = [];
+        let locations = [];
+        let currentEditClient = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkUserSession();
+            loadFromLocalStorage();
+            renderClients();
+            renderLocationGroups();
+            renderActivityClients();
+            updateStats();
+            setupEventListeners();
+        });
+
+        // Check user session
+        function checkUserSession() {
+            const storedUser = localStorage.getItem('goutDivinUser');
+            if (!storedUser) {
+                window.location.href = 'gout-divin-login.html';
+                return;
+            }
+            
+            const user = JSON.parse(storedUser);
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            
+            if (userAvatar) userAvatar.textContent = user.name.charAt(0).toUpperCase();
+            if (userName) userName.textContent = user.name;
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+                localStorage.removeItem('goutDivinUser');
+                window.location.href = 'gout-divin-login.html';
+            }
+        }
+
+        // Load data from localStorage
+        function loadFromLocalStorage() {
+            // Load clients
+            const storedClients = localStorage.getItem('goutDivinClients');
+            if (storedClients) {
+                clients = JSON.parse(storedClients);
+            } else {
+                // Default clients for GOUT DIVIN
+                clients = [
+                    {
+                        id: 1,
+                        firstName: 'Koffi',
+                        lastName: 'Amouzou',
+                        phone: '+228 90 12 34 56',
+                        email: 'koffi.amouzou@email.com',
+                        location: 'Lomé',
+                        totalOrders: 45,
+                        totalSpent: 125000,
+                        lastOrderDate: new Date(Date.now() - 86400000).toISOString(),
+                        notes: 'Client fidèle, aime le plat riz sauce arachide',
+                        createdAt: new Date(Date.now() - 86400000 * 30).toISOString()
+                    },
+                    {
+                        id: 2,
+                        firstName: 'Awa',
+                        lastName: 'Koffi',
+                        phone: '+228 91 23 45 67',
+                        email: 'awa.koffi@email.com',
+                        location: 'Kara',
+                        totalOrders: 28,
+                        totalSpent: 85000,
+                        lastOrderDate: new Date(Date.now() - 86400000 * 3).toISOString(),
+                        notes: 'Préfère les plats végétariens',
+                        createdAt: new Date(Date.now() - 86400000 * 45).toISOString()
+                    },
+                    {
+                        id: 3,
+                        firstName: 'Moussa',
+                        lastName: 'Traoré',
+                        phone: '+228 92 34 56 78',
+                        email: '',
+                        location: 'Sokodé',
+                        totalOrders: 15,
+                        totalSpent: 45000,
+                        lastOrderDate: new Date(Date.now() - 86400000 * 7).toISOString(),
+                        notes: 'Commande souvent pour événements familiaux',
+                        createdAt: new Date(Date.now() - 86400000 * 60).toISOString()
+                    },
+                    {
+                        id: 4,
+                        firstName: 'Akossiwa',
+                        lastName: 'Mensah',
+                        phone: '+228 93 45 67 89',
+                        email: 'akossiwa.m@email.com',
+                        location: 'Lomé',
+                        totalOrders: 67,
+                        totalSpent: 210000,
+                        lastOrderDate: new Date(Date.now() - 86400000 * 2).toISOString(),
+                        notes: 'Client très fidèle, commande 2-3 fois par semaine',
+                        createdAt: new Date(Date.now() - 86400000 * 90).toISOString()
+                    },
+                    {
+                        id: 5,
+                        firstName: 'Yao',
+                        lastName: 'Kouadio',
+                        phone: '+228 94 56 78 90',
+                        email: '',
+                        location: 'Atakpamé',
+                        totalOrders: 8,
+                        totalSpent: 24000,
+                        lastOrderDate: new Date(Date.now() - 86400000 * 20).toISOString(),
+                        notes: '',
+                        createdAt: new Date(Date.now() - 86400000 * 120).toISOString()
+                    },
+                    {
+                        id: 6,
+                        firstName: 'Aminata',
+                        lastName: 'Bamba',
+                        phone: '+228 95 67 89 01',
+                        email: 'aminata.b@email.com',
+                        location: 'Kpalimé',
+                        totalOrders: 32,
+                        totalSpent: 96000,
+                        lastOrderDate: new Date(Date.now() - 86400000 * 5).toISOString(),
+                        notes: 'Allergie aux arachides',
+                        createdAt: new Date(Date.now() - 86400000 * 40).toISOString()
+                    },
+                    {
+                        id: 7,
+                        firstName: 'Kokou',
+                        lastName: 'Agbo',
+                        phone: '+228 96 78 90 12',
+                        email: '',
+                        location: 'Lomé',
+                        totalOrders: 52,
+                        totalSpent: 156000,
+                        lastOrderDate: new Date(Date.now() - 86400000 * 1).toISOString(),
+                        notes: 'Commande souvent pour le bureau',
+                        createdAt: new Date(Date.now() - 86400000 * 35).toISOString()
+                    },
+                    {
+                        id: 8,
+                        firstName: 'Mariam',
+                        lastName: 'Sissoko',
+                        phone: '+228 97 89 01 23',
+                        email: 'mariam.s@email.com',
+                        location: 'Tsévié',
+                        totalOrders: 19,
+                        totalSpent: 57000,
+                        lastOrderDate: new Date(Date.now() - 86400000 * 10).toISOString(),
+                        notes: '',
+                        createdAt: new Date(Date.now() - 86400000 * 80).toISOString()
+                    }
+                ];
+            }
+            
+            // Load sales for activity calculation
+            const storedSales = localStorage.getItem('goutDivinSales');
+            if (storedSales) {
+                sales = JSON.parse(storedSales);
+            } else {
+                sales = [];
+            }
+            
+            // Update client activity based on sales
+            updateClientActivity();
+            
+            // Extract locations
+            updateLocations();
+            
+            saveToLocalStorage();
+        }
+
+        // Update client activity based on sales
+        function updateClientActivity() {
+            const now = new Date();
+            const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            
+            clients.forEach(client => {
+                const clientSales = sales.filter(sale => 
+                    sale.customerName && 
+                    sale.customerName.toLowerCase().includes(client.firstName.toLowerCase()) &&
+                    sale.customerName.toLowerCase().includes(client.lastName.toLowerCase())
+                );
+                
+                const recentSales = clientSales.filter(sale => new Date(sale.date) >= thirtyDaysAgo);
+                const veryRecentSales = clientSales.filter(sale => new Date(sale.date) >= sevenDaysAgo);
+                
+                client.totalOrders = clientSales.length;
+                client.totalSpent = clientSales.reduce((sum, sale) => sum + (sale.total || 0), 0);
+                
+                if (veryRecentSales.length >= 3) {
+                    client.activityLevel = 'very-active';
+                } else if (recentSales.length >= 2) {
+                    client.activityLevel = 'active';
+                } else {
+                    client.activityLevel = 'inactive';
+                }
+                
+                if (clientSales.length > 0) {
+                    const lastSale = clientSales.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                    client.lastOrderDate = lastSale.date;
+                }
+            });
+        }
+
+        // Update locations list
+        function updateLocations() {
+            const locationCounts = {};
+            clients.forEach(client => {
+                locationCounts[client.location] = (locationCounts[client.location] || 0) + 1;
+            });
+            
+            locations = Object.entries(locationCounts).map(([name, count]) => ({
+                name,
+                count,
+                clients: clients.filter(client => client.location === name)
+            }));
+            
+            // Update location filter
+            const locationFilter = document.getElementById('locationFilter');
+            locationFilter.innerHTML = '<option value="">Tous les lieux</option>';
+            locations.forEach(location => {
+                locationFilter.innerHTML += `<option value="${location.name}">${location.name} (${location.count})</option>`;
+            });
+        }
+
+        // Save to localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('goutDivinClients', JSON.stringify(clients));
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Client form
+            document.getElementById('clientForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveClient();
+            });
+            
+            // Location change handler
+            document.getElementById('clientLocation').addEventListener('change', function() {
+                const customLocationGroup = document.getElementById('clientCustomLocation').parentElement;
+                if (this.value === 'Autre') {
+                    customLocationGroup.style.display = 'block';
+                } else {
+                    customLocationGroup.style.display = 'none';
+                }
+            });
+            
+            // Search and filters
+            document.getElementById('searchInput').addEventListener('input', filterClients);
+            document.getElementById('locationFilter').addEventListener('change', filterClients);
+            document.getElementById('activityFilter').addEventListener('change', filterClients);
+            
+            document.getElementById('locationSearchInput').addEventListener('input', filterLocationGroups);
+            document.getElementById('activitySearchInput').addEventListener('input', filterActivityClients);
+            document.getElementById('activityLevelFilter').addEventListener('change', filterActivityClients);
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Get client activity level
+        function getClientActivityLevel(client) {
+            return client.activityLevel || 'inactive';
+        }
+
+        // Render clients
+        function renderClients() {
+            const grid = document.getElementById('clientsGrid');
+            const filteredClients = getFilteredClients();
+            
+            if (filteredClients.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Aucun client trouvé</div>';
+                return;
+            }
+            
+            grid.innerHTML = filteredClients.map(client => {
+                const activityLevel = getClientActivityLevel(client);
+                const initials = (client.firstName.charAt(0) + client.lastName.charAt(0)).toUpperCase();
+                
+                return `
+                    <div class="client-card ${activityLevel}">
+                        <div class="client-header">
+                            <div class="client-info">
+                                <div class="client-name">${client.firstName} ${client.lastName}</div>
+                                <div class="client-phone">« ${client.phone}</div>
+                                ${client.email ? `<div class="client-email">¤ ${client.email}</div>` : ''}
+                            </div>
+                            <div class="client-avatar">${initials}</div>
+                        </div>
+                        
+                        <div class="client-location">
+                            <span>§</span>
+                            <span>${client.location}</span>
+                        </div>
+                        
+                        <div class="client-stats">
+                            <div class="client-stat">
+                                <div class="client-stat-value">${client.totalOrders}</div>
+                                <div class="client-stat-label">Commandes</div>
+                            </div>
+                            <div class="client-stat">
+                                <div class="client-stat-value">${Math.round(client.totalSpent / 1000)}k</div>
+                                <div class="client-stat-label">FCFA</div>
+                            </div>
+                            <div class="client-stat">
+                                <div class="client-stat-value">${getDaysSinceLastOrder(client.lastOrderDate)}</div>
+                                <div class="client-stat-label">Jours</div>
+                            </div>
+                        </div>
+                        
+                        <div class="client-activity">
+                            <div class="activity-badge ${activityLevel}">
+                            <span class="activity-badge-icon">${getActivityIcon(activityLevel)}</span>
+                            <span>${getActivityLabel(activityLevel)}</span>
+                        </div>
+                        </div>
+                        
+                        ${client.notes ? `<div style="font-size: 0.875rem; color: #666; margin-bottom: 1rem;">${client.notes}</div>` : ''}
+                        
+                        <div class="client-actions">
+                            <button class="btn-icon btn-primary" onclick="editClient(${client.id})" title="Modifier">
+                                <i class="material-icons">edit</i>
+                            </button>
+                            <button class="btn-icon btn-danger" onclick="deleteClient(${client.id})" title="Supprimer">
+                                <i class="material-icons">delete</i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render location groups
+        function renderLocationGroups() {
+            const container = document.getElementById('locationGroups');
+            const filteredGroups = getFilteredLocationGroups();
+            
+            if (filteredGroups.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">Aucun lieu trouvé</div>';
+                return;
+            }
+            
+            container.innerHTML = filteredGroups.map(location => {
+                const sortedClients = location.clients.sort((a, b) => {
+                    const activityA = getClientActivityLevel(a);
+                    const activityB = getClientActivityLevel(b);
+                    const activityOrder = { 'very-active': 0, 'active': 1, 'inactive': 2 };
+                    return activityOrder[activityA] - activityOrder[activityB];
+                });
+                
+                return `
+                    <div class="location-group">
+                        <div class="location-header">
+                            <div class="location-name">${location.name}</div>
+                            <div class="location-count">${location.count} clients</div>
+                        </div>
+                        <div class="location-clients">
+                            ${sortedClients.map(client => {
+                                const activityLevel = getClientActivityLevel(client);
+                                return `
+                                    <div class="location-client-item">
+                                        <div class="location-client-info">
+                                            <div class="location-client-name">${client.firstName} ${client.lastName}</div>
+                                            <div class="location-client-phone">« ${client.phone}</div>
+                                        </div>
+                                        <div class="location-client-activity">
+                                            <div class="activity-badge ${activityLevel}">
+                            <span class="activity-badge-icon">${getActivityIcon(activityLevel)}</span>
+                            <span>${getActivityLabel(activityLevel)}</span>
+                        </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render activity clients (sorted by activity)
+        function renderActivityClients() {
+            const grid = document.getElementById('activityClientsGrid');
+            const filteredClients = getFilteredActivityClients();
+            
+            if (filteredClients.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Aucun client trouvé</div>';
+                return;
+            }
+            
+            grid.innerHTML = filteredClients.map(client => {
+                const activityLevel = getClientActivityLevel(client);
+                const initials = (client.firstName.charAt(0) + client.lastName.charAt(0)).toUpperCase();
+                
+                return `
+                    <div class="client-card ${activityLevel}">
+                        <div class="client-header">
+                            <div class="client-info">
+                                <div class="client-name">${client.firstName} ${client.lastName}</div>
+                                <div class="client-phone">« ${client.phone}</div>
+                                ${client.email ? `<div class="client-email">¤ ${client.email}</div>` : ''}
+                            </div>
+                            <div class="client-avatar">${initials}</div>
+                        </div>
+                        
+                        <div class="client-location">
+                            <span>§</span>
+                            <span>${client.location}</span>
+                        </div>
+                        
+                        <div class="client-stats">
+                            <div class="client-stat">
+                                <div class="client-stat-value">${client.totalOrders}</div>
+                                <div class="client-stat-label">Commandes</div>
+                            </div>
+                            <div class="client-stat">
+                                <div class="client-stat-value">${Math.round(client.totalSpent / 1000)}k</div>
+                                <div class="client-stat-label">FCFA</div>
+                            </div>
+                            <div class="client-stat">
+                                <div class="client-stat-value">${getDaysSinceLastOrder(client.lastOrderDate)}</div>
+                                <div class="client-stat-label">Jours</div>
+                            </div>
+                        </div>
+                        
+                        <div class="client-activity">
+                            <div class="activity-badge ${activityLevel}">
+                            <span class="activity-badge-icon">${getActivityIcon(activityLevel)}</span>
+                            <span>${getActivityLabel(activityLevel)}</span>
+                        </div>
+                        </div>
+                        
+                        ${client.notes ? `<div style="font-size: 0.875rem; color: #666; margin-bottom: 1rem;">${client.notes}</div>` : ''}
+                        
+                        <div class="client-actions">
+                            <button class="btn-icon btn-primary" onclick="editClient(${client.id})" title="Modifier">
+                                <i class="material-icons">edit</i>
+                            </button>
+                            <button class="btn-icon btn-danger" onclick="deleteClient(${client.id})" title="Supprimer">
+                                <i class="material-icons">delete</i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter functions
+        function getFilteredClients() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const locationFilter = document.getElementById('locationFilter').value;
+            const activityFilter = document.getElementById('activityFilter').value;
+            
+            return clients.filter(client => {
+                const matchesSearch = 
+                    client.firstName.toLowerCase().includes(searchTerm) ||
+                    client.lastName.toLowerCase().includes(searchTerm) ||
+                    client.phone.includes(searchTerm) ||
+                    (client.email && client.email.toLowerCase().includes(searchTerm));
+                
+                const matchesLocation = !locationFilter || client.location === locationFilter;
+                const matchesActivity = !activityFilter || getClientActivityLevel(client) === activityFilter;
+                
+                return matchesSearch && matchesLocation && matchesActivity;
+            });
+        }
+
+        function filterClients() {
+            renderClients();
+        }
+
+        function getFilteredLocationGroups() {
+            const searchTerm = document.getElementById('locationSearchInput').value.toLowerCase();
+            
+            return locations.filter(location => {
+                const matchesSearch = location.name.toLowerCase().includes(searchTerm);
+                return matchesSearch;
+            });
+        }
+
+        function filterLocationGroups() {
+            renderLocationGroups();
+        }
+
+        function getFilteredActivityClients() {
+            const searchTerm = document.getElementById('activitySearchInput').value.toLowerCase();
+            const activityFilter = document.getElementById('activityLevelFilter').value;
+            
+            let filtered = clients.filter(client => {
+                const matchesSearch = 
+                    client.firstName.toLowerCase().includes(searchTerm) ||
+                    client.lastName.toLowerCase().includes(searchTerm) ||
+                    client.phone.includes(searchTerm) ||
+                    (client.email && client.email.toLowerCase().includes(searchTerm));
+                
+                const matchesActivity = !activityFilter || getClientActivityLevel(client) === activityFilter;
+                
+                return matchesSearch && matchesActivity;
+            });
+            
+            // Sort by activity level (very-active first, then active, then inactive)
+            return filtered.sort((a, b) => {
+                const activityOrder = { 'very-active': 0, 'active': 1, 'inactive': 2 };
+                const activityA = getClientActivityLevel(a);
+                const activityB = getClientActivityLevel(b);
+                return activityOrder[activityA] - activityOrder[activityB];
+            });
+        }
+
+        function filterActivityClients() {
+            renderActivityClients();
+        }
+
+        // Statistics Details Functions
+        function showTotalClientsDetails() {
+            const clients = JSON.parse(localStorage.getItem('goutDivinClients') || '[]');
+            
+            let content = `
+                <div class="stat-summary">
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${clients.length}</div>
+                        <div class="stat-summary-label">Total clients</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${clients.filter(c => c.totalOrders > 0).length}</div>
+                        <div class="stat-summary-label">Clients avec commandes</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${clients.reduce((sum, c) => sum + (c.totalOrders || 0), 0)}</div>
+                        <div class="stat-summary-label">Total commandes</div>
+                    </div>
+                </div>
+                <h3>Liste complète des clients</h3>
+                <table class="details-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Téléphone</th>
+                            <th>Commandes</th>
+                            <th>Total dépensé</th>
+                            <th>Dernière commande</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            if (clients.length === 0) {
+                content += `<tr><td colspan="5" style="text-align: center;">Aucun client</td></tr>`;
+            } else {
+                clients.forEach(client => {
+                    const lastOrder = new Date(client.lastOrderDate || client.createdAt).toLocaleDateString('fr-FR');
+                    content += `
+                        <tr>
+                            <td><strong>${client.firstName} ${client.lastName}</strong></td>
+                            <td>${client.phone}</td>
+                            <td>${client.totalOrders || 0}</td>
+                            <td>${(client.totalSpent || 0).toLocaleString()} FCFA</td>
+                            <td>${lastOrder}</td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            content += `</tbody></table>`;
+            openStatsModal('Total clients - Détails', content);
+        }
+        
+        function showVeryActiveClientsDetails() {
+            const clients = JSON.parse(localStorage.getItem('goutDivinClients') || '[]');
+            const veryActiveClients = clients.filter(client => getClientActivityLevel(client) === 'very-active');
+            
+            // Sort by activity (most orders first, then by amount spent)
+            veryActiveClients.sort((a, b) => {
+                const ordersDiff = (b.totalOrders || 0) - (a.totalOrders || 0);
+                if (ordersDiff !== 0) return ordersDiff;
+                return (b.totalSpent || 0) - (a.totalSpent || 0);
+            });
+            
+            let content = `
+                <div class="stat-summary">
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${veryActiveClients.length}</div>
+                        <div class="stat-summary-label">Clients très actifs</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${veryActiveClients.reduce((sum, c) => sum + (c.totalOrders || 0), 0)}</div>
+                        <div class="stat-summary-label">Total commandes</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${veryActiveClients.reduce((sum, c) => sum + (c.totalSpent || 0), 0).toLocaleString()} FCFA</div>
+                        <div class="stat-summary-label">Total dépensé</div>
+                    </div>
+                </div>
+                <h3>Clients très actifs 🔥</h3>
+            `;
+            
+            if (veryActiveClients.length === 0) {
+                content += `<p style="text-align: center;">Aucun client très actif</p>`;
+            } else {
+                veryActiveClients.forEach((client, index) => {
+                    const lastOrder = new Date(client.lastOrderDate || client.createdAt).toLocaleDateString('fr-FR');
+                    content += `
+                        <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid #ff4757;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <strong>${index + 1}. ${client.firstName} ${client.lastName}</strong>
+                                <span style="color: #ff4757; font-weight: bold;">🔥 Très actif</span>
+                            </div>
+                            <div><strong>Téléphone:</strong> ${client.phone}</div>
+                            <div><strong>Commandes:</strong> ${client.totalOrders || 0}</div>
+                            <div><strong>Total dépensé:</strong> ${(client.totalSpent || 0).toLocaleString()} FCFA</div>
+                            <div><strong>Dernière commande:</strong> ${lastOrder}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            openStatsModal('Clients très actifs - Détails', content);
+        }
+        
+        function showActiveClientsDetails() {
+            const clients = JSON.parse(localStorage.getItem('goutDivinClients') || '[]');
+            const activeClients = clients.filter(client => getClientActivityLevel(client) === 'active');
+            
+            // Sort by activity
+            activeClients.sort((a, b) => {
+                const ordersDiff = (b.totalOrders || 0) - (a.totalOrders || 0);
+                if (ordersDiff !== 0) return ordersDiff;
+                return (b.totalSpent || 0) - (a.totalSpent || 0);
+            });
+            
+            let content = `
+                <div class="stat-summary">
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${activeClients.length}</div>
+                        <div class="stat-summary-label">Clients actifs</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${activeClients.reduce((sum, c) => sum + (c.totalOrders || 0), 0)}</div>
+                        <div class="stat-summary-label">Total commandes</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${activeClients.reduce((sum, c) => sum + (c.totalSpent || 0), 0).toLocaleString()} FCFA</div>
+                        <div class="stat-summary-label">Total dépensé</div>
+                    </div>
+                </div>
+                <h3>Clients actifs ⭐</h3>
+                <table class="details-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Téléphone</th>
+                            <th>Commandes</th>
+                            <th>Total dépensé</th>
+                            <th>Dernière commande</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            if (activeClients.length === 0) {
+                content += `<tr><td colspan="5" style="text-align: center;">Aucun client actif</td></tr>`;
+            } else {
+                activeClients.forEach(client => {
+                    const lastOrder = new Date(client.lastOrderDate || client.createdAt).toLocaleDateString('fr-FR');
+                    content += `
+                        <tr>
+                            <td><strong>${client.firstName} ${client.lastName}</strong></td>
+                            <td>${client.phone}</td>
+                            <td>${client.totalOrders || 0}</td>
+                            <td>${(client.totalSpent || 0).toLocaleString()} FCFA</td>
+                            <td>${lastOrder}</td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            content += `</tbody></table>`;
+            openStatsModal('Clients actifs - Détails', content);
+        }
+        
+        function showInactiveClientsDetails() {
+            const clients = JSON.parse(localStorage.getItem('goutDivinClients') || '[]');
+            const inactiveClients = clients.filter(client => getClientActivityLevel(client) === 'inactive');
+            
+            // Sort by last order date (oldest first)
+            inactiveClients.sort((a, b) => {
+                const dateA = new Date(a.lastOrderDate || a.createdAt);
+                const dateB = new Date(b.lastOrderDate || b.createdAt);
+                return dateA - dateB;
+            });
+            
+            let content = `
+                <div class="stat-summary">
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${inactiveClients.length}</div>
+                        <div class="stat-summary-label">Clients inactifs</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${inactiveClients.filter(c => c.totalOrders > 0).length}</div>
+                        <div class="stat-summary-label">Anciens clients</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${inactiveClients.filter(c => c.totalOrders === 0).length}</div>
+                        <div class="stat-summary-label">Jamais commandé</div>
+                    </div>
+                </div>
+                <h3>Clients inactifs 📊</h3>
+                <table class="details-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Téléphone</th>
+                            <th>Commandes</th>
+                            <th>Total dépensé</th>
+                            <th>Dernière commande</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            if (inactiveClients.length === 0) {
+                content += `<tr><td colspan="5" style="text-align: center;">Aucun client inactif</td></tr>`;
+            } else {
+                inactiveClients.forEach(client => {
+                    const lastOrder = new Date(client.lastOrderDate || client.createdAt).toLocaleDateString('fr-FR');
+                    const daysSinceLastOrder = getDaysSinceLastOrder(client.lastOrderDate || client.createdAt);
+                    content += `
+                        <tr style="opacity: 0.7;">
+                            <td><strong>${client.firstName} ${client.lastName}</strong></td>
+                            <td>${client.phone}</td>
+                            <td>${client.totalOrders || 0}</td>
+                            <td>${(client.totalSpent || 0).toLocaleString()} FCFA</td>
+                            <td>${lastOrder} <small>(il y a ${daysSinceLastOrder} jours)</small></td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            content += `</tbody></table>`;
+            openStatsModal('Clients inactifs - Détails', content);
+        }
+        
+        function getDaysSinceLastOrder(lastOrderDate) {
+            if (!lastOrderDate) return 999;
+            
+            const lastOrder = new Date(lastOrderDate);
+            const today = new Date();
+            const diffTime = Math.abs(today - lastOrder);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            return diffDays;
+        }
+        
+        function openStatsModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('statsModal').classList.add('active');
+        }
+        
+        function closeStatsModal() {
+            document.getElementById('statsModal').classList.remove('active');
+        }
+        
+        // Update stats
+        function updateStats() {
+            const veryActiveCount = clients.filter(client => getClientActivityLevel(client) === 'very-active').length;
+            const activeCount = clients.filter(client => getClientActivityLevel(client) === 'active').length;
+            const inactiveCount = clients.filter(client => getClientActivityLevel(client) === 'inactive').length;
+            
+            document.querySelector('.stats-grid .stat-value').textContent = clients.length;
+            document.querySelectorAll('.stats-grid .stat-value')[1].textContent = veryActiveCount;
+            document.querySelectorAll('.stats-grid .stat-value')[2].textContent = activeCount;
+            document.querySelectorAll('.stats-grid .stat-value')[3].textContent = inactiveCount;
+        }
+
+        // Client modal functions
+        function openClientModal() {
+            currentEditClient = null;
+            document.getElementById('clientModalTitle').textContent = 'Ajouter un client';
+            document.getElementById('clientForm').reset();
+            document.getElementById('clientCustomLocation').parentElement.style.display = 'none';
+            document.getElementById('clientModal').classList.add('active');
+        }
+
+        function closeClientModal() {
+            document.getElementById('clientModal').classList.remove('active');
+            currentEditClient = null;
+        }
+
+        function editClient(id) {
+            currentEditClient = clients.find(client => client.id === id);
+            if (!currentEditClient) return;
+            
+            document.getElementById('clientModalTitle').textContent = 'Modifier un client';
+            document.getElementById('clientFirstName').value = currentEditClient.firstName;
+            document.getElementById('clientLastName').value = currentEditClient.lastName;
+            document.getElementById('clientPhone').value = currentEditClient.phone;
+            document.getElementById('clientEmail').value = currentEditClient.email || '';
+            document.getElementById('clientLocation').value = currentEditClient.location;
+            document.getElementById('clientCustomLocation').value = '';
+            document.getElementById('clientNotes').value = currentEditClient.notes || '';
+            
+            // Show custom location field if needed
+            if (currentEditClient.location === 'Autre') {
+                document.getElementById('clientCustomLocation').parentElement.style.display = 'block';
+                document.getElementById('clientCustomLocation').value = currentEditClient.customLocation || '';
+            }
+            
+            document.getElementById('clientModal').classList.add('active');
+        }
+
+        function saveClient() {
+            const clientData = {
+                firstName: document.getElementById('clientFirstName').value.trim(),
+                lastName: document.getElementById('clientLastName').value.trim(),
+                phone: document.getElementById('clientPhone').value.trim(),
+                email: document.getElementById('clientEmail').value.trim(),
+                location: document.getElementById('clientLocation').value,
+                customLocation: document.getElementById('clientCustomLocation').value.trim(),
+                notes: document.getElementById('clientNotes').value.trim(),
+                totalOrders: 0,
+                totalSpent: 0,
+                activityLevel: 'inactive',
+                createdAt: new Date().toISOString()
+            };
+            
+            // Handle custom location
+            if (clientData.location === 'Autre' && clientData.customLocation) {
+                clientData.location = clientData.customLocation;
+            }
+            
+            if (currentEditClient) {
+                // Update existing client
+                Object.assign(currentEditClient, clientData, {
+                    totalOrders: currentEditClient.totalOrders,
+                    totalSpent: currentEditClient.totalSpent,
+                    activityLevel: currentEditClient.activityLevel,
+                    lastOrderDate: currentEditClient.lastOrderDate
+                });
+            } else {
+                // Add new client
+                clientData.id = Date.now();
+                clients.push(clientData);
+            }
+            
+            updateClientActivity();
+            updateLocations();
+            saveToLocalStorage();
+            renderClients();
+            renderLocationGroups();
+            renderActivityClients();
+            updateStats();
+            closeClientModal();
+            
+            showMessage('Client enregistré avec succès', 'success');
+        }
+
+        function deleteClient(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce client ?')) return;
+            
+            clients = clients.filter(client => client.id !== id);
+            updateClientActivity();
+            updateLocations();
+            saveToLocalStorage();
+            renderClients();
+            renderLocationGroups();
+            renderActivityClients();
+            updateStats();
+            
+            showMessage('Client supprimé avec succès', 'success');
+        }
+
+        // Utility functions
+        function getDaysSinceLastOrder(lastOrderDate) {
+            if (!lastOrderDate) return 'Jamais';
+            
+            const now = new Date();
+            const lastOrder = new Date(lastOrderDate);
+            const daysDiff = Math.floor((now - lastOrder) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff === 0) return 'Aujourd\'hui';
+            if (daysDiff === 1) return 'Hier';
+            if (daysDiff < 7) return `${daysDiff} jours`;
+            if (daysDiff < 30) return `${Math.floor(daysDiff / 7)} sem`;
+            if (daysDiff < 365) return `${Math.floor(daysDiff / 30)} mois`;
+            return `${Math.floor(daysDiff / 365)} an${Math.floor(daysDiff / 365) > 1 ? 's' : ''}`;
+        }
+
+        function getActivityLabel(level) {
+            switch (level) {
+                case 'very-active': return 'Très actif';
+                case 'active': return 'Actif';
+                case 'inactive': return 'Inactif';
+                default: return 'Inactif';
+            }
+        }
+        
+        function getActivityIcon(level) {
+            switch (level) {
+                case 'very-active': return '🔥';
+                case 'active': return '⭐';
+                case 'inactive': return '📊';
+                default: return '📊';
+            }
+        }
+
+        function showMessage(message, type = 'success') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+        
+        // DOMContentLoaded event
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check user session
+            checkUserSession();
+            
+            // Add click events to statistics cards
+            const statCards = document.querySelectorAll('.stats-grid .stat-card');
+            statCards.forEach((card, index) => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function() {
+                    const label = this.querySelector('.stat-label').textContent;
+                    
+                    switch(label) {
+                        case 'Total clients':
+                            showTotalClientsDetails();
+                            break;
+                        case 'Très actifs':
+                            showVeryActiveClientsDetails();
+                            break;
+                        case 'Actifs':
+                            showActiveClientsDetails();
+                            break;
+                        case 'Inactifs':
+                            showInactiveClientsDetails();
+                            break;
+                        default:
+                            console.log(`Statistique cliquée: ${label}`);
+                    }
+                });
+                
+                // Add hover effect
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = 'var(--shadow-hover)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow)';
+                });
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                const statsModal = document.getElementById('statsModal');
+                if (event.target === statsModal) {
+                    closeStatsModal();
+                }
+            });
+            
+            // Initialize data and render
+            loadClients();
+            updateStats();
+            renderClients();
+            renderLocationGroups();
+            renderActivityClients();
+        });
+    </script>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOUT DIVIN - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-green: #2d5016;
+            --secondary-green: #4a7c28;
+            --light-green: #8bc34a;
+            --pale-green: #c8e6c9;
+            --primary-yellow: #ffeb3b;
+            --secondary-yellow: #ffc107;
+            --dark-yellow: #f57c00;
+            --pale-yellow: #fff9c4;
+            --text-dark: #1b1b1b;
+            --text-light: #ffffff;
+            --bg-light: #f5f5f5;
+            --bg-white: #ffffff;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--pale-green) 0%, var(--pale-yellow) 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: var(--text-light);
+            padding: 2rem 0;
+            box-shadow: var(--shadow-hover);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar-nav {
+            padding: 2rem 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        
+        .nav-item.active {
+            background: rgba(255,255,255,0.15);
+            border-left: 4px solid var(--primary-yellow);
+        }
+        
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .nav-item.active .nav-icon {
+            background: var(--primary-yellow);
+            color: var(--primary-green);
+        }
+        
+        .nav-text {
+            flex: 1;
+        }
+        
+        .nav-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .nav-description {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        /* Main Content */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            flex: 1;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: var(--text-light);
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--primary-yellow) 0%, transparent 70%);
+            opacity: 0.3;
+            border-radius: 50%;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary-yellow);
+            color: var(--primary-green);
+            transform: translateY(-2px);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: var(--primary-yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-green), var(--secondary-green));
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .stat-card.highlight::before {
+            background: linear-gradient(90deg, var(--primary-yellow), var(--secondary-yellow));
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--light-green), var(--secondary-green));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card.highlight .stat-icon {
+            background: linear-gradient(135deg, var(--primary-yellow), var(--dark-yellow));
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card.highlight .stat-value {
+            color: var(--dark-yellow);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .stat-change.positive {
+            color: var(--secondary-green);
+        }
+        
+        .stat-change.negative {
+            color: #d32f2f;
+        }
+        
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-card {
+            background: var(--bg-white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+        
+        .chart-period {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .period-btn {
+            padding: 0.25rem 0.75rem;
+            border: 1px solid var(--secondary-green);
+            background: transparent;
+            border-radius: 20px;
+            color: var(--secondary-green);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .period-btn.active {
+            background: var(--secondary-green);
+            color: var(--text-light);
+        }
+        
+        .period-btn:hover {
+            background: var(--light-green);
+            color: var(--text-light);
+        }
+        
+        .chart-container {
+            height: 300px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 1rem 0;
+        }
+        
+        .bar {
+            width: 30px;
+            background: linear-gradient(to top, var(--primary-green), var(--light-green));
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .bar:hover {
+            transform: scaleY(1.05);
+            filter: brightness(1.1);
+        }
+        
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: #666;
+            white-space: nowrap;
+        }
+        
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+        
+        /* Top Items */
+        .top-items {
+            background: var(--bg-white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .top-items-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+        }
+        
+        .top-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .top-item:last-child {
+            border-bottom: none;
+        }
+        
+        .top-item-name {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .top-item-stats {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .top-item-quantity {
+            font-weight: bold;
+            color: var(--secondary-green);
+        }
+        
+        .top-item-revenue {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Alerts Section */
+        .alerts-section {
+            background: var(--bg-white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .alerts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .alerts-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+        
+        .alert-badge {
+            background: var(--dark-yellow);
+            color: var(--text-light);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .alerts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .alert-card {
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .alert-card:hover {
+            transform: translateX(5px);
+        }
+        
+        .alert-card.critical {
+            background: #ffebee;
+            border-left-color: #d32f2f;
+        }
+        
+        .alert-card.warning {
+            background: #fff8e1;
+            border-left-color: var(--dark-yellow);
+        }
+        
+        .alert-card.info {
+            background: var(--pale-green);
+            border-left-color: var(--secondary-green);
+        }
+        
+        .alert-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .alert-card.critical .alert-icon {
+            background: #d32f2f;
+            color: var(--text-light);
+        }
+        
+        .alert-card.warning .alert-icon {
+            background: var(--dark-yellow);
+            color: var(--text-light);
+        }
+        
+        .alert-card.info .alert-icon {
+            background: var(--secondary-green);
+            color: var(--text-light);
+        }
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .alert-message {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .action-card {
+            background: var(--bg-white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--light-green), var(--secondary-green));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--text-light);
+            margin: 0 auto 1rem;
+        }
+        
+        .action-card:nth-child(even) .action-icon {
+            background: linear-gradient(135deg, var(--primary-yellow), var(--dark-yellow));
+        }
+        
+        .action-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-green);
+        }
+        
+        .action-card:nth-child(even) .action-title {
+            color: var(--dark-yellow);
+        }
+        
+        .action-description {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background-color: var(--bg-white);
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: var(--shadow-hover);
+            animation: slideIn 0.3s ease;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: var(--text-light);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .modal-body {
+            padding: 2rem;
+            max-height: calc(80vh - 100px);
+            overflow-y: auto;
+        }
+        
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .details-table th,
+        .details-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .details-table th {
+            background-color: var(--pale-green);
+            color: var(--primary-green);
+            font-weight: 600;
+        }
+        
+        .details-table tr:hover {
+            background-color: #f9fafb;
+        }
+        
+        .stat-summary {
+            background: var(--pale-green);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .stat-summary-item {
+            text-align: center;
+        }
+        
+        .stat-summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+        
+        .stat-summary-label {
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { 
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Footer
+        .footer {
+            background: var(--primary-green);
+            color: var(--text-light);
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .footer-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-yellow);
+        } */
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .header-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">GD</div>
+                <div class="logo-text">GOUT DIVIN</div>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="gout-divin-dashboard.html" class="nav-item active">
+                <div class="nav-icon">«</div>
+                <div class="nav-text">
+                    <div class="nav-title">Dashboard</div>
+                    <div class="nav-description">Vue d'ensemble</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-pos.html" class="nav-item">
+                <div class="nav-icon">+</div>
+                <div class="nav-text">
+                    <div class="nav-title">Point de Vente</div>
+                    <div class="nav-description">Enregistrer les commandes</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-menu.html" class="nav-item">
+                <div class="nav-icon">«</div>
+                <div class="nav-text">
+                    <div class="nav-title">Menu</div>
+                    <div class="nav-description">Gérer les produits</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-stock.html" class="nav-item">
+                <div class="nav-icon">§</div>
+                <div class="nav-text">
+                    <div class="nav-title">Stock</div>
+                    <div class="nav-description">Gérer les ingrédients</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-clients.html" class="nav-item">
+                <div class="nav-icon">¶</div>
+                <div class="nav-text">
+                    <div class="nav-title">Clients</div>
+                    <div class="nav-description">Gérer la clientèle</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-delivery.html" class="nav-item">
+                <div class="nav-icon">°</div>
+                <div class="nav-text">
+                    <div class="nav-title">Livraisons</div>
+                    <div class="nav-description">Gérer les livraisons</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-reports.html" class="nav-item">
+                <div class="nav-icon">£</div>
+                <div class="nav-text">
+                    <div class="nav-title">Rapports</div>
+                    <div class="nav-description">Exporter les données</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-settings.html" class="nav-item">
+                <div class="nav-icon">®</div>
+                <div class="nav-text">
+                    <div class="nav-title">Paramètres</div>
+                    <div class="nav-description">Configurer le système</div>
+                </div>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div class="container">
+            <!-- Statistics -->
+            <div class="stats-grid fade-in">
+                <div class="stat-card highlight">
+                    <div class="stat-icon">¥</div>
+                    <div class="stat-value">245,800</div>
+                    <div class="stat-label">Revenu du jour</div>
+                    <div class="stat-change positive">
+                        <span>+</span>
+                        <span>12.5%</span>
+                        <span>vs hier</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">ø</div>
+                    <div class="stat-value">156</div>
+                    <div class="stat-label">Commandes du jour</div>
+                    <div class="stat-change positive">
+                        <span>+</span>
+                        <span>8.3%</span>
+                        <span>vs hier</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">÷</div>
+                    <div class="stat-value">1,576</div>
+                    <div class="stat-label">Clients actifs</div>
+                    <div class="stat-change positive">
+                        <span>+</span>
+                        <span>5.2%</span>
+                        <span>vs mois dernier</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">§</div>
+                    <div class="stat-value">89.2%</div>
+                    <div class="stat-label">Satisfaction</div>
+                    <div class="stat-change positive">
+                        <span>+</span>
+                        <span>2.1%</span>
+                        <span>vs semaine dernière</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-section fade-in">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Ventes - 7 derniers jours</h3>
+                        <div class="chart-period">
+                            <button class="period-btn">Semaine</button>
+                            <button class="period-btn active">Mois</button>
+                            <button class="period-btn">Année</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="bar" style="height: 60%;">
+                            <div class="bar-value">180K</div>
+                            <div class="bar-label">Lun</div>
+                        </div>
+                        <div class="bar" style="height: 75%;">
+                            <div class="bar-value">225K</div>
+                            <div class="bar-label">Mar</div>
+                        </div>
+                        <div class="bar" style="height: 85%;">
+                            <div class="bar-value">255K</div>
+                            <div class="bar-label">Mer</div>
+                        </div>
+                        <div class="bar" style="height: 70%;">
+                            <div class="bar-value">210K</div>
+                            <div class="bar-label">Jeu</div>
+                        </div>
+                        <div class="bar" style="height: 90%;">
+                            <div class="bar-value">270K</div>
+                            <div class="bar-label">Ven</div>
+                        </div>
+                        <div class="bar" style="height: 95%;">
+                            <div class="bar-value">285K</div>
+                            <div class="bar-label">Sam</div>
+                        </div>
+                        <div class="bar" style="height: 80%;">
+                            <div class="bar-value">240K</div>
+                            <div class="bar-label">Dim</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="top-items">
+                    <h3 class="top-items-title">Plats les plus vendus</h3>
+                    <div class="top-item">
+                        <span class="top-item-name">Riz sauce arachide</span>
+                        <div class="top-item-stats">
+                            <span class="top-item-quantity">45</span>
+                            <span class="top-item-revenue">67,500 FCFA</span>
+                        </div>
+                    </div>
+                    <div class="top-item">
+                        <span class="top-item-name">Poulet braisé</span>
+                        <div class="top-item-stats">
+                            <span class="top-item-quantity">38</span>
+                            <span class="top-item-revenue">95,000 FCFA</span>
+                        </div>
+                    </div>
+                    <div class="top-item">
+                        <span class="top-item-name">Formule déjeuner</span>
+                        <div class="top-item-stats">
+                            <span class="top-item-quantity">32</span>
+                            <span class="top-item-revenue">112,000 FCFA</span>
+                        </div>
+                    </div>
+                    <div class="top-item">
+                        <span class="top-item-name">Salade tropicale</span>
+                        <div class="top-item-stats">
+                            <span class="top-item-quantity">28</span>
+                            <span class="top-item-revenue">42,000 FCFA</span>
+                        </div>
+                    </div>
+                    <div class="top-item">
+                        <span class="top-item-name">Jus de fruits</span>
+                        <div class="top-item-stats">
+                            <span class="top-item-quantity">67</span>
+                            <span class="top-item-revenue">33,500 FCFA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Section -->
+            <div class="alerts-section fade-in">
+                <div class="alerts-header">
+                    <h3 class="alerts-title">Alertes & Notifications</h3>
+                    <span class="alert-badge">3 nouvelles</span>
+                </div>
+                <div class="alerts-grid">
+                    <div class="alert-card critical">
+                        <div class="alert-icon">!</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Stock critique - Tomates</div>
+                            <div class="alert-message">Plus que 2 kg disponibles. Seuil minimum: 10 kg</div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert-card warning">
+                        <div class="alert-icon">!</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Stock faible - Pain baguette</div>
+                            <div class="alert-message">15 unités restantes. Commande à prévoir.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert-card info">
+                        <div class="alert-icon">i</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Nouvelle commande en ligne</div>
+                            <div class="alert-message">Commande #1234 - 3 plats à préparer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions fade-in">
+                <a href="gout-divin-pos.html" class="action-card">
+                    <div class="action-icon">+</div>
+                    <div class="action-title">Nouvelle Vente</div>
+                    <div class="action-description">Enregistrer une commande rapidement</div>
+                </a>
+                
+                <a href="gout-divin-menu.html" class="action-card">
+                    <div class="action-icon">«</div>
+                    <div class="action-title">Gestion Menu</div>
+                    <div class="action-description">Ajouter/modifier des plats</div>
+                </a>
+                
+                <a href="gout-divin-stock.html" class="action-card">
+                    <div class="action-icon">§</div>
+                    <div class="action-title">Stock</div>
+                    <div class="action-description">Gérer les ingrédients et produits</div>
+                </a>
+                
+                <a href="gout-divin-clients.html" class="action-card">
+                    <div class="action-icon">¶</div>
+                    <div class="action-title">Clients</div>
+                    <div class="action-description">Voir la liste des clients</div>
+                </a>
+                
+                <a href="gout-divin-reports.html" class="action-card">
+                    <div class="action-icon">£</div>
+                    <div class="action-title">Rapports</div>
+                    <div class="action-description">Exporter les données</div>
+                </a>
+                
+                <a href="gout-divin-delivery.html" class="action-card">
+                    <div class="action-icon">°</div>
+                    <div class="action-title">Livraisons</div>
+                    <div class="action-description">Gérer les livraisons et livreurs</div>
+                </a>
+                
+                <a href="gout-divin-settings.html" class="action-card">
+                    <div class="action-icon">®</div>
+                    <div class="action-title">Paramètres</div>
+                    <div class="action-description">Configurer le restaurant</div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">GOUT DIVIN</div>
+                <div class="footer-links">
+                    <a href="#">À propos</a>
+                    <a href="#">Support</a>
+                    <a href="#">Confidentialité</a>
+                </div>
+                <div> 2024 GOUT DIVIN - Tous droits réservés</div>
+            </div>
+        </div>
+    </footer> -->
+    
+    <!-- Statistics Details Modal -->
+    <div id="statsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Détails</h2>
+                <button class="modal-close" onclick="closeStatsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContent">
+                    <!-- Content will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Statistics Details Functions
+        function showRevenueDetails() {
+            const sales = JSON.parse(localStorage.getItem('goutDivinSales') || '[]');
+            const today = new Date().toDateString();
+            const todaySales = sales.filter(sale => new Date(sale.date).toDateString() === today);
+            
+            let content = `
+                <div class="stat-summary">
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${todaySales.length}</div>
+                        <div class="stat-summary-label">Transactions</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${todaySales.reduce((sum, sale) => sum + sale.total, 0).toLocaleString()} FCFA</div>
+                        <div class="stat-summary-label">Total</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${todaySales.length > 0 ? Math.round(todaySales.reduce((sum, sale) => sum + sale.total, 0) / todaySales.length).toLocaleString() : 0} FCFA</div>
+                        <div class="stat-summary-label">Moyenne</div>
+                    </div>
+                </div>
+                <h3>Transactions du jour</h3>
+                <table class="details-table">
+                    <thead>
+                        <tr>
+                            <th>Heure</th>
+                            <th>Client</th>
+                            <th>Articles</th>
+                            <th>Total</th>
+                            <th>Paiement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            if (todaySales.length === 0) {
+                content += `<tr><td colspan="5" style="text-align: center;">Aucune transaction aujourd'hui</td></tr>`;
+            } else {
+                todaySales.forEach(sale => {
+                    const time = new Date(sale.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                    const itemsCount = sale.items.reduce((sum, item) => sum + item.quantity, 0);
+                    content += `
+                        <tr>
+                            <td>${time}</td>
+                            <td>${sale.customerName}</td>
+                            <td>${itemsCount} article${itemsCount > 1 ? 's' : ''}</td>
+                            <td>${sale.total.toLocaleString()} FCFA</td>
+                            <td>${sale.paymentMethod === 'cash' ? 'Espèces' : 'Mobile Money'}</td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            content += `</tbody></table>`;
+            
+            openStatsModal('Revenu du jour - Détails', content);
+        }
+        
+        function showOrdersDetails() {
+            const sales = JSON.parse(localStorage.getItem('goutDivinSales') || '[]');
+            const today = new Date().toDateString();
+            const todaySales = sales.filter(sale => new Date(sale.date).toDateString() === today);
+            
+            let content = `
+                <div class="stat-summary">
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${todaySales.length}</div>
+                        <div class="stat-summary-label">Commandes</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${todaySales.reduce((sum, sale) => sum + sale.items.reduce((itemSum, item) => itemSum + item.quantity, 0), 0)}</div>
+                        <div class="stat-summary-label">Articles vendus</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${todaySales.filter(sale => sale.paymentMethod === 'cash').length}</div>
+                        <div class="stat-summary-label">Espèces</div>
+                    </div>
+                </div>
+                <h3>Détail des commandes du jour</h3>
+            `;
+            
+            if (todaySales.length === 0) {
+                content += `<p style="text-align: center;">Aucune commande aujourd'hui</p>`;
+            } else {
+                todaySales.forEach((sale, index) => {
+                    const time = new Date(sale.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                    content += `
+                        <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem; margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <strong>Commande #${sale.id}</strong>
+                                <span>${time}</span>
+                            </div>
+                            <div><strong>Client:</strong> ${sale.customerName}</div>
+                            <div><strong>Articles:</strong></div>
+                            <ul style="margin: 0.5rem 0;">
+                    `;
+                    
+                    sale.items.forEach(item => {
+                        content += `<li>${item.quantity}x ${item.name} - ${item.price.toLocaleString()} FCFA</li>`;
+                    });
+                    
+                    content += `
+                            </ul>
+                            <div style="display: flex; justify-content: space-between; margin-top: 0.5rem;">
+                                <strong>Total: ${sale.total.toLocaleString()} FCFA</strong>
+                                <span>${sale.paymentMethod === 'cash' ? 'Espèces' : 'Mobile Money'}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            openStatsModal('Commandes du jour - Détails', content);
+        }
+        
+        function showClientsDetails() {
+            const clients = JSON.parse(localStorage.getItem('goutDivinClients') || '[]');
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            
+            const activeClients = clients.filter(client => 
+                new Date(client.lastOrderDate || client.createdAt) > thirtyDaysAgo
+            );
+            
+            // Sort clients by activity (most active first)
+            activeClients.sort((a, b) => {
+                // Primary sort: by number of orders
+                const ordersDiff = (b.totalOrders || 0) - (a.totalOrders || 0);
+                if (ordersDiff !== 0) return ordersDiff;
+                
+                // Secondary sort: by total spent
+                const spentDiff = (b.totalSpent || 0) - (a.totalSpent || 0);
+                if (spentDiff !== 0) return spentDiff;
+                
+                // Tertiary sort: by last order date (more recent first)
+                const dateA = new Date(a.lastOrderDate || a.createdAt);
+                const dateB = new Date(b.lastOrderDate || b.createdAt);
+                return dateB - dateA;
+            });
+            
+            let content = `
+                <div class="stat-summary">
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${clients.length}</div>
+                        <div class="stat-summary-label">Total clients</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${activeClients.length}</div>
+                        <div class="stat-summary-label">Clients actifs</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${clients.reduce((sum, client) => sum + (client.totalOrders || 0), 0)}</div>
+                        <div class="stat-summary-label">Total commandes</div>
+                    </div>
+                </div>
+                <h3>Clients actifs (30 derniers jours) - Classés par activité</h3>
+                <table class="details-table">
+                    <thead>
+                        <tr>
+                            <th>Activité</th>
+                            <th>Nom</th>
+                            <th>Téléphone</th>
+                            <th>Commandes</th>
+                            <th>Total dépensé</th>
+                            <th>Dernière commande</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            if (activeClients.length === 0) {
+                content += `<tr><td colspan="6" style="text-align: center;">Aucun client actif</td></tr>`;
+            } else {
+                activeClients.forEach((client, index) => {
+                    const lastOrder = new Date(client.lastOrderDate || client.createdAt).toLocaleDateString('fr-FR');
+                    
+                    // Determine activity level based on ranking
+                    let activityLevel, activityIcon, activityColor;
+                    if (index === 0) {
+                        activityLevel = 'Très actif';
+                        activityIcon = '🔥';
+                        activityColor = '#ff4757';
+                    } else if (index < activeClients.length * 0.3) {
+                        activityLevel = 'Actif';
+                        activityIcon = '⭐';
+                        activityColor = '#ffa502';
+                    } else {
+                        activityLevel = 'Modéré';
+                        activityIcon = '📊';
+                        activityColor = '#3742fa';
+                    }
+                    
+                    content += `
+                        <tr>
+                            <td style="text-align: center;">
+                                <span style="font-size: 1.2rem;">${activityIcon}</span>
+                                <br>
+                                <small style="color: ${activityColor}; font-weight: 600;">${activityLevel}</small>
+                            </td>
+                            <td><strong>${client.firstName} ${client.lastName}</strong></td>
+                            <td>${client.phone}</td>
+                            <td><strong>${client.totalOrders || 0}</strong></td>
+                            <td>${(client.totalSpent || 0).toLocaleString()} FCFA</td>
+                            <td>${lastOrder}</td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            content += `</tbody></table>`;
+            
+            openStatsModal('Clients actifs - Détails', content);
+        }
+        
+        function showSatisfactionDetails() {
+            // Simulation de données de satisfaction
+            const satisfactionData = [
+                { period: 'Aujourd\'hui', rate: 92, reviews: 45 },
+                { period: 'Hier', rate: 89, reviews: 38 },
+                { period: 'Cette semaine', rate: 90.5, reviews: 234 },
+                { period: 'Semaine dernière', rate: 88.4, reviews: 198 }
+            ];
+            
+            let content = `
+                <div class="stat-summary">
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">89.2%</div>
+                        <div class="stat-summary-label">Taux global</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">${satisfactionData[2].reviews}</div>
+                        <div class="stat-summary-label">Avis cette semaine</div>
+                    </div>
+                    <div class="stat-summary-item">
+                        <div class="stat-summary-value">+2.1%</div>
+                        <div class="stat-summary-label">Progression</div>
+                    </div>
+                </div>
+                <h3>Détails de satisfaction</h3>
+                <table class="details-table">
+                    <thead>
+                        <tr>
+                            <th>Période</th>
+                            <th>Taux de satisfaction</th>
+                            <th>Nombre d'avis</th>
+                            <th>Tendance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            satisfactionData.forEach((data, index) => {
+                const trend = index > 0 ? (data.rate > satisfactionData[index-1].rate ? '📈' : '📉') : '➖';
+                content += `
+                    <tr>
+                        <td>${data.period}</td>
+                        <td>${data.rate}%</td>
+                        <td>${data.reviews}</td>
+                        <td>${trend}</td>
+                    </tr>
+                `;
+            });
+            
+            content += `</tbody></table>`;
+            
+            openStatsModal('Taux de satisfaction - Détails', content);
+        }
+        
+        function openStatsModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('statsModal').style.display = 'block';
+        }
+        
+        function closeStatsModal() {
+            document.getElementById('statsModal').style.display = 'none';
+        }
+        
+        // Dashboard functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check user session
+            checkUserSession();
+            
+            // Add click events to statistics cards
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function() {
+                    const label = this.querySelector('.stat-label').textContent;
+                    
+                    switch(label) {
+                        case 'Revenu du jour':
+                            showRevenueDetails();
+                            break;
+                        case 'Commandes du jour':
+                            showOrdersDetails();
+                            break;
+                        case 'Clients actifs':
+                            showClientsDetails();
+                            break;
+                        case 'Satisfaction':
+                            showSatisfactionDetails();
+                            break;
+                        default:
+                            console.log(`Statistique cliquée: ${label}`);
+                    }
+                });
+                
+                // Add hover effect
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = 'var(--shadow-hover)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow)';
+                });
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('statsModal');
+                if (event.target === modal) {
+                    closeStatsModal();
+                }
+            });
+            
+            // Add fade-in animation to elements
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all cards
+            document.querySelectorAll('.stat-card, .chart-card, .top-items, .alerts-section, .action-card').forEach(card => {
+                observer.observe(card);
+            });
+
+            // Period button functionality
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateChart(this.textContent);
+                });
+            });
+
+            // Update chart based on period
+            function updateChart(period) {
+                const bars = document.querySelectorAll('.bar');
+                const data = {
+                    'Semaine': [60, 75, 85, 70, 90, 95, 80],
+                    'Mois': [70, 85, 75, 90, 85, 95, 88],
+                    'Année': [80, 75, 85, 80, 90, 85, 92]
+                };
+
+                bars.forEach((bar, index) => {
+                    const height = data[period][index];
+                    bar.style.height = height + '%';
+                    
+                    // Update value
+                    const value = bar.querySelector('.bar-value');
+                    const baseValue = 180000;
+                    const newValue = Math.round(baseValue * (height / 60));
+                    value.textContent = (newValue / 1000).toFixed(0) + 'K';
+                });
+            }
+
+            // Simulate real-time updates
+            setInterval(() => {
+                // Update revenue
+                const revenueElement = document.querySelector('.stat-value');
+                const currentRevenue = parseInt(revenueElement.textContent.replace(',', ''));
+                const newRevenue = currentRevenue + Math.floor(Math.random() * 1000);
+                revenueElement.textContent = newRevenue.toLocaleString();
+
+                // Update orders
+                const ordersElement = document.querySelectorAll('.stat-value')[1];
+                const currentOrders = parseInt(ordersElement.textContent);
+                if (Math.random() > 0.7) {
+                    ordersElement.textContent = currentOrders + 1;
+                }
+            }, 30000); // Update every 30 seconds
+
+            // Action card interactions
+            document.querySelectorAll('.action-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const title = this.querySelector('.action-title').textContent;
+                    console.log(`Navigation vers: ${title}`);
+                    // Add navigation logic here
+                });
+            });
+
+            // Alert dismiss functionality
+            document.querySelectorAll('.alert-card').forEach(alert => {
+                alert.addEventListener('click', function() {
+                    this.style.opacity = '0.5';
+                    setTimeout(() => {
+                        this.style.display = 'none';
+                    }, 300);
+                });
+            });
+
+            // Bar chart hover effects
+            document.querySelectorAll('.bar').forEach(bar => {
+                bar.addEventListener('mouseenter', function() {
+                    this.style.filter = 'brightness(1.2)';
+                });
+                
+                bar.addEventListener('mouseleave', function() {
+                    this.style.filter = 'brightness(1)';
+                });
+            });
+        });
+
+        // User session management
+        function checkUserSession() {
+            const storedUser = localStorage.getItem('goutDivinUser');
+            if (!storedUser) {
+                // Redirect to login if no session
+                window.location.href = 'gout-divin-login.html';
+                return;
+            }
+            
+            // Update UI with user info
+            const user = JSON.parse(storedUser);
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            
+            if (userAvatar) userAvatar.textContent = user.name.charAt(0).toUpperCase();
+            if (userName) userName.textContent = user.name;
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+                localStorage.removeItem('goutDivinUser');
+                window.location.href = 'gout-divin-login.html';
+            }
+        }
+    // Navigation handlers for action cards
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers to action cards
+            const actionCards = document.querySelectorAll('.action-card');
+            actionCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const href = this.getAttribute('href');
+                    if (href) {
+                        window.location.href = href;
+                    }
+                });
+            });
+        });
+    </script>
+        </main>
+    </div>
+</body>
+</html>
