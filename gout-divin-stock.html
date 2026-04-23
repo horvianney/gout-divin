@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOUT DIVIN - Gestion du Stock</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-green: #2d5016;
+            --secondary-green: #4a7c28;
+            --light-green: #8bc34a;
+            --pale-green: #c8e6c9;
+            --primary-yellow: #ffeb3b;
+            --secondary-yellow: #ffc107;
+            --dark-yellow: #f57c00;
+            --pale-yellow: #fff9c4;
+            --text-dark: #1b1b1b;
+            --text-light: #ffffff;
+            --bg-light: #f5f5f5;
+            --bg-white: #ffffff;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--pale-green) 0%, var(--pale-yellow) 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: var(--text-light);
+            padding: 2rem 0;
+            box-shadow: var(--shadow-hover);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar-nav {
+            padding: 2rem 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: var(--primary-yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+        
+        /* Main Content Wrapper */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+        }
+        
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-green), var(--secondary-green));
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .stat-card.highlight::before {
+            background: linear-gradient(90deg, var(--primary-yellow), var(--secondary-yellow));
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--light-green), var(--secondary-green));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card.highlight .stat-icon {
+            background: linear-gradient(135deg, var(--primary-yellow), var(--dark-yellow));
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card.highlight .stat-value {
+            color: var(--dark-yellow);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Section */
+        .section {
+            background: var(--bg-white);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+        
+        .section-content {
+            padding: 1.5rem;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab {
+            padding: 0.75rem 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .tab:hover {
+            color: var(--primary-green);
+            background: var(--pale-green);
+        }
+        
+        .tab.active {
+            color: var(--primary-green);
+            border-bottom-color: var(--primary-green);
+            background: var(--pale-green);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Search and Filters */
+        .search-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--secondary-green);
+            box-shadow: 0 0 0 3px rgba(76, 124, 40, 0.1);
+        }
+        
+        .filter-select {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            background: var(--bg-white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--secondary-green);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: var(--text-light);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-green), var(--light-green));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(76, 124, 40, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--primary-yellow), var(--secondary-yellow));
+            color: var(--primary-green);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, var(--secondary-yellow), var(--dark-yellow));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #d32f2f, #f44336);
+            color: var(--text-light);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #f44336, #e57373);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: var(--text-light);
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+        
+        /* Stock Grid */
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .stock-card {
+            background: var(--bg-white);
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stock-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-green), var(--secondary-green));
+        }
+        
+        .stock-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--secondary-green);
+        }
+        
+        .stock-card.critical::before {
+            background: linear-gradient(90deg, #d32f2f, #f44336);
+        }
+        
+        .stock-card.low::before {
+            background: linear-gradient(90deg, var(--dark-yellow), var(--secondary-yellow));
+        }
+        
+        .stock-card.normal::before {
+            background: linear-gradient(90deg, var(--primary-green), var(--secondary-green));
+        }
+        
+        .stock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        
+        .stock-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 0.25rem;
+        }
+        
+        .stock-category {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--pale-green);
+            color: var(--primary-green);
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .stock-quantity {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .stock-quantity.critical {
+            color: #d32f2f;
+        }
+        
+        .stock-quantity.low {
+            color: var(--dark-yellow);
+        }
+        
+        .stock-quantity.normal {
+            color: var(--primary-green);
+        }
+        
+        .stock-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .stock-progress {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .stock-progress-bar {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .stock-progress-bar.critical {
+            background: #d32f2f;
+        }
+        
+        .stock-progress-bar.low {
+            background: var(--dark-yellow);
+        }
+        
+        .stock-progress-bar.normal {
+            background: var(--primary-green);
+        }
+        
+        .stock-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .stock-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+        
+        /* Movements Table */
+        .movements-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .movements-table th,
+        .movements-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .movements-table th {
+            background: var(--pale-green);
+            font-weight: 600;
+            color: var(--primary-green);
+            font-size: 0.875rem;
+        }
+        
+        .movements-table td {
+            font-size: 0.875rem;
+        }
+        
+        .movement-type {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .movement-type.in {
+            background: var(--pale-green);
+            color: var(--primary-green);
+        }
+        
+        .movement-type.out {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        
+        .movement-type.adjustment {
+            background: var(--pale-yellow);
+            color: var(--dark-yellow);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--pale-green);
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #666;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: var(--pale-green);
+            color: var(--primary-green);
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary-green);
+            box-shadow: 0 0 0 3px rgba(76, 124, 40, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .header-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stock-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-bar {
+                flex-direction: column;
+            }
+            
+            .search-input {
+                min-width: auto;
+            }
+            
+            .stock-actions {
+                flex-direction: column;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        /* Success/Error Messages */
+        .message {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow-hover);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .message.success {
+            background: var(--pale-green);
+            color: var(--primary-green);
+            border-left: 4px solid var(--primary-green);
+        }
+        
+        .message.error {
+            background: #ffebee;
+            color: #d32f2f;
+            border-left: 4px solid #d32f2f;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">GD</div>
+                <div class="logo-text">GOUT DIVIN</div>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="gout-divin-dashboard.html" class="nav-item">
+                <div class="nav-icon">«</div>
+                <div class="nav-text">
+                    <div class="nav-title">Dashboard</div>
+                    <div class="nav-description">Vue d'ensemble</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-pos.html" class="nav-item">
+                <div class="nav-icon">+</div>
+                <div class="nav-text">
+                    <div class="nav-title">Point de Vente</div>
+                    <div class="nav-description">Enregistrer les commandes</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-menu.html" class="nav-item">
+                <div class="nav-icon">«</div>
+                <div class="nav-text">
+                    <div class="nav-title">Menu</div>
+                    <div class="nav-description">Gérer les produits</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-stock.html" class="nav-item active">
+                <div class="nav-icon">§</div>
+                <div class="nav-text">
+                    <div class="nav-title">Stock</div>
+                    <div class="nav-description">Gérer les ingrédients</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-clients.html" class="nav-item">
+                <div class="nav-icon">¶</div>
+                <div class="nav-text">
+                    <div class="nav-title">Clients</div>
+                    <div class="nav-description">Gérer la clientèle</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-delivery.html" class="nav-item">
+                <div class="nav-icon">°</div>
+                <div class="nav-text">
+                    <div class="nav-title">Livraisons</div>
+                    <div class="nav-description">Gérer les livraisons</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-reports.html" class="nav-item">
+                <div class="nav-icon">£</div>
+                <div class="nav-text">
+                    <div class="nav-title">Rapports</div>
+                    <div class="nav-description">Exporter les données</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-settings.html" class="nav-item">
+                <div class="nav-icon">®</div>
+                <div class="nav-text">
+                    <div class="nav-title">Paramètres</div>
+                    <div class="nav-description">Configurer le système</div>
+                </div>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div class="container">
+            <!-- Statistics -->
+            <div class="stats-grid fade-in">
+                <div class="stat-card highlight">
+                    <div class="stat-icon">§</div>
+                    <div class="stat-value">14</div>
+                    <div class="stat-label">Produits finis</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">«</div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Ingrédients</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">!</div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Stock critique</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">÷</div>
+                    <div class="stat-value">85%</div>
+                    <div class="stat-label">Taux de remplissage</div>
+                </div>
+            </div>
+
+            <!-- Stock Management Section -->
+            <div class="section fade-in">
+                <div class="section-header">
+                    <h2 class="section-title">Gestion du Stock</h2>
+                    <button class="btn btn-primary" onclick="openMovementModal()">Nouveau mouvement</button>
+                </div>
+                
+                <div class="section-content">
+                    <!-- Tabs -->
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab('overview')">Aperçu</button>
+                        <button class="tab" onclick="switchTab('ingredients')">Ingrédients</button>
+                        <button class="tab" onclick="switchTab('movements')">Mouvements</button>
+                        <button class="tab" onclick="switchTab('alerts')">Alertes</button>
+                    </div>
+
+                    <!-- Overview Tab -->
+                    <div id="overview-tab" class="tab-content active">
+                        <div class="search-bar">
+                            <input type="text" class="search-input" placeholder="Rechercher un produit..." id="searchInput">
+                            <select class="filter-select" id="categoryFilter">
+                                <option value="">Toutes les catégories</option>
+                            </select>
+                            <select class="filter-select" id="statusFilter">
+                                <option value="">Tous les statuts</option>
+                                <option value="normal">Normal</option>
+                                <option value="low">Faible</option>
+                                <option value="critical">Critique</option>
+                            </select>
+                        </div>
+                        
+                        <div class="stock-grid" id="stockGrid">
+                            <!-- Stock items will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Ingredients Tab -->
+                    <div id="ingredients-tab" class="tab-content">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <div>
+                                <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--primary-green);">Ingrédients et Matières Premières</h3>
+                                <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.25rem;">Tomates, oignons, pain, farine, huile, etc.</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="openIngredientModal()">Ajouter un ingrédient</button>
+                        </div>
+                        
+                        <div class="search-bar">
+                            <input type="text" class="search-input" placeholder="Rechercher un ingrédient..." id="ingredientSearchInput">
+                            <select class="filter-select" id="ingredientCategoryFilter">
+                                <option value="">Toutes les catégories</option>
+                                <option value="Légumes">Légumes</option>
+                                <option value="Produits frais">Produits frais</option>
+                                <option value="Épicerie">Épicerie</option>
+                                <option value="Boulangerie">Boulangerie</option>
+                                <option value="Viandes">Viandes</option>
+                                <option value="Boissons">Boissons</option>
+                                <option value="Autres">Autres</option>
+                            </select>
+                            <select class="filter-select" id="ingredientStatusFilter">
+                                <option value="">Tous les statuts</option>
+                                <option value="normal">Normal</option>
+                                <option value="low">Faible</option>
+                                <option value="critical">Critique</option>
+                            </select>
+                        </div>
+                        
+                        <div class="stock-grid" id="ingredientsGrid">
+                            <!-- Ingredients will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Movements Tab -->
+                    <div id="movements-tab" class="tab-content">
+                        <div class="search-bar">
+                            <input type="text" class="search-input" placeholder="Rechercher un mouvement..." id="movementSearch">
+                            <select class="filter-select" id="movementTypeFilter">
+                                <option value="">Tous les types</option>
+                                <option value="in">Entrées</option>
+                                <option value="out">Sorties</option>
+                                <option value="adjustment">Ajustements</option>
+                            </select>
+                            <select class="filter-select" id="dateFilter">
+                                <option value="">Toutes les dates</option>
+                                <option value="today">Aujourd'hui</option>
+                                <option value="week">Cette semaine</option>
+                                <option value="month">Ce mois</option>
+                            </select>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="movements-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Produit</th>
+                                        <th>Type</th>
+                                        <th>Quantité</th>
+                                        <th>Référence</th>
+                                        <th>Motif</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="movementsTable">
+                                    <!-- Movements will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Alerts Tab -->
+                    <div id="alerts-tab" class="tab-content">
+                        <div class="stock-grid" id="alertsGrid">
+                            <!-- Alert items will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Movement Modal -->
+    <div id="movementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Nouveau mouvement de stock</h3>
+                <button class="close-btn" onclick="closeMovementModal()">&times;</button>
+            </div>
+            
+            <form id="movementForm">
+                <div class="form-group">
+                    <label for="movementProduct">Produit *</label>
+                    <select id="movementProduct" required>
+                        <option value="">Sélectionner un produit</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="movementType">Type de mouvement *</label>
+                    <select id="movementType" required>
+                        <option value="">Sélectionner un type</option>
+                        <option value="in">Entrée de stock</option>
+                        <option value="out">Sortie de stock</option>
+                        <option value="adjustment">Ajustement</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="movementQuantity">Quantité *</label>
+                    <input type="number" id="movementQuantity" min="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="movementReference">Référence (facture, fournisseur...)</label>
+                    <input type="text" id="movementReference" placeholder="Ex: Fournisseur ABC, Facture #123">
+                </div>
+                
+                <div class="form-group">
+                    <label for="movementReason">Motif</label>
+                    <textarea id="movementReason" placeholder="Description du mouvement..."></textarea>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeMovementModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Ingredient Modal -->
+    <div id="ingredientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="ingredientModalTitle">Ajouter un ingrédient</h3>
+                <button class="close-btn" onclick="closeIngredientModal()">&times;</button>
+            </div>
+            
+            <form id="ingredientForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="ingredientName">Nom de l'ingrédient *</label>
+                        <input type="text" id="ingredientName" required placeholder="Ex: Tomates, Oignons, Pain">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ingredientCategory">Catégorie *</label>
+                        <select id="ingredientCategory" required>
+                            <option value="">Sélectionner une catégorie</option>
+                            <option value="Légumes">Légumes</option>
+                            <option value="Produits frais">Produits frais</option>
+                            <option value="Épicerie">Épicerie</option>
+                            <option value="Boulangerie">Boulangerie</option>
+                            <option value="Viandes">Viandes</option>
+                            <option value="Boissons">Boissons</option>
+                            <option value="Autres">Autres</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ingredientUnit">Unité de mesure *</label>
+                        <select id="ingredientUnit" required>
+                            <option value="">Sélectionner une unité</option>
+                            <option value="kg">Kilogrammes (kg)</option>
+                            <option value="g">Grammes (g)</option>
+                            <option value="L">Litres (L)</option>
+                            <option value="mL">Millilitres (mL)</option>
+                            <option value="unités">Unités (pièces)</option>
+                            <option value="sacs">Sacs</option>
+                            <option value="bouteilles">Bouteilles</option>
+                            <option value="boîtes">Boîtes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ingredientCurrentStock">Quantité actuelle *</label>
+                        <input type="number" id="ingredientCurrentStock" min="0" step="0.1" required placeholder="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ingredientMinStock">Stock minimum (alerte)</label>
+                        <input type="number" id="ingredientMinStock" min="0" step="0.1" placeholder="5">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ingredientSupplier">Fournisseur habituel</label>
+                        <input type="text" id="ingredientSupplier" placeholder="Nom du fournisseur">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ingredientPrice">Prix d'achat unitaire (FCFA)</label>
+                        <input type="number" id="ingredientPrice" min="0" step="10" placeholder="0">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ingredientNotes">Notes</label>
+                    <textarea id="ingredientNotes" placeholder="Notes sur l'ingrédient (conservation, utilisation, etc.)"></textarea>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeIngredientModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Stock Update Modal -->
+    <div id="quickUpdateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Mise à jour rapide du stock</h3>
+                <button class="close-btn" onclick="closeQuickUpdateModal()">&times;</button>
+            </div>
+            
+            <form id="quickUpdateForm">
+                <div class="form-group">
+                    <label>Produit</label>
+                    <input type="text" id="quickUpdateProductName" readonly style="background: var(--pale-green);">
+                </div>
+                
+                <div class="form-group">
+                    <label>Stock actuel</label>
+                    <input type="number" id="quickUpdateCurrentStock" readonly style="background: var(--pale-green);">
+                </div>
+                
+                <div class="form-group">
+                    <label for="quickUpdateQuantity">Nouvelle quantité *</label>
+                    <input type="number" id="quickUpdateQuantity" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quickUpdateReason">Motif de la modification</label>
+                    <textarea id="quickUpdateReason" placeholder="Raison de la modification..."></textarea>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeQuickUpdateModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let stockItems = [];
+        let stockMovements = [];
+        let categories = [];
+        let ingredients = [];
+        let currentQuickUpdateItem = null;
+        let currentEditIngredient = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkUserSession();
+            loadFromLocalStorage();
+            renderStockGrid();
+            renderIngredients();
+            renderMovements();
+            renderAlerts();
+            updateStats();
+            setupEventListeners();
+        });
+
+        // Check user session
+        function checkUserSession() {
+            const storedUser = localStorage.getItem('goutDivinUser');
+            if (!storedUser) {
+                window.location.href = 'gout-divin-login.html';
+                return;
+            }
+            
+            const user = JSON.parse(storedUser);
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            
+            if (userAvatar) userAvatar.textContent = user.name.charAt(0).toUpperCase();
+            if (userName) userName.textContent = user.name;
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+                localStorage.removeItem('goutDivinUser');
+                window.location.href = 'gout-divin-login.html';
+            }
+        }
+
+        // Load data from localStorage
+        function loadFromLocalStorage() {
+            // Load menu items for stock
+            const storedMenuItems = localStorage.getItem('goutDivinMenuItems');
+            if (storedMenuItems) {
+                const menuItems = JSON.parse(storedMenuItems);
+                stockItems = menuItems.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    category: item.category,
+                    currentStock: item.stock || 0,
+                    minStock: item.minStock || 5,
+                    unit: 'unités',
+                    lastUpdated: new Date().toISOString()
+                }));
+            } else {
+                // Default stock items
+                stockItems = [
+                    {
+                        id: 1,
+                        name: 'Riz sauce arachide',
+                        category: 'Plats principaux',
+                        currentStock: 50,
+                        minStock: 10,
+                        unit: 'unités',
+                        lastUpdated: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        name: 'Poulet braisé',
+                        category: 'Plats principaux',
+                        currentStock: 30,
+                        minStock: 5,
+                        unit: 'unités',
+                        lastUpdated: new Date().toISOString()
+                    },
+                    {
+                        id: 3,
+                        name: 'Soda',
+                        category: 'Boissons',
+                        currentStock: 100,
+                        minStock: 20,
+                        unit: 'bouteilles',
+                        lastUpdated: new Date().toISOString()
+                    },
+                    {
+                        id: 4,
+                        name: 'Eau minérale',
+                        category: 'Boissons',
+                        currentStock: 200,
+                        minStock: 50,
+                        unit: 'bouteilles',
+                        lastUpdated: new Date().toISOString()
+                    }
+                ];
+            }
+            
+            // Load ingredients
+            const storedIngredients = localStorage.getItem('goutDivinIngredients');
+            if (storedIngredients) {
+                ingredients = JSON.parse(storedIngredients);
+            } else {
+                // Default ingredients for Togo restaurant
+                ingredients = [
+                    {
+                        id: 1001,
+                        name: 'Tomates',
+                        category: 'Légumes',
+                        currentStock: 25,
+                        minStock: 10,
+                        unit: 'kg',
+                        supplier: 'Marché de Lomé',
+                        price: 500,
+                        notes: 'Tomates fraîches locales',
+                        lastUpdated: new Date().toISOString()
+                    },
+                    {
+                        id: 1002,
+                        name: 'Oignons',
+                        category: 'Légumes',
+                        currentStock: 15,
+                        minStock: 8,
+                        unit: 'kg',
+                        supplier: 'Marché de Lomé',
+                        price: 400,
+                        notes: 'Oignons rouges',
+                        lastUpdated: new Date().toISOString()
+                    },
+                    {
+                        id: 1003,
+                        name: 'Pain baguette',
+                        category: 'Boulangerie',
+                        currentStock: 50,
+                        minStock: 20,
+                        unit: 'unités',
+                        supplier: 'Boulangerie du quartier',
+                        price: 250,
+                        notes: 'Baguettes fraîches du jour',
+                        lastUpdated: new Date().toISOString()
+                    },
+                    {
+                        id: 1004,
+                        name: 'Huile végétale',
+                        category: 'Épicerie',
+                        currentStock: 20,
+                        minStock: 5,
+                        unit: 'L',
+                        supplier: 'Supermarché',
+                        price: 1500,
+                        notes: 'Huile pour friture',
+                        lastUpdated: new Date().toISOString()
+                    },
+                    {
+                        id: 1005,
+                        name: 'Farine',
+                        category: 'Épicerie',
+                        currentStock: 30,
+                        minStock: 10,
+                        unit: 'kg',
+                        supplier: 'Épicerie centrale',
+                        price: 600,
+                        notes: 'Farine de blé',
+                        lastUpdated: new Date().toISOString()
+                    },
+                    {
+                        id: 1006,
+                        name: 'Poulet frais',
+                        category: 'Viandes',
+                        currentStock: 10,
+                        minStock: 3,
+                        unit: 'kg',
+                        supplier: 'Volailles Togo',
+                        price: 2500,
+                        notes: 'Poulet fermier',
+                        lastUpdated: new Date().toISOString()
+                    },
+                    {
+                        id: 1007,
+                        name: 'Riz',
+                        category: 'Épicerie',
+                        currentStock: 100,
+                        minStock: 25,
+                        unit: 'kg',
+                        supplier: 'Importateur',
+                        price: 800,
+                        notes: 'Riz long grain',
+                        lastUpdated: new Date().toISOString()
+                    },
+                    {
+                        id: 1008,
+                        name: 'Arachides',
+                        category: 'Épicerie',
+                        currentStock: 8,
+                        minStock: 2,
+                        unit: 'kg',
+                        supplier: 'Producteurs locaux',
+                        price: 1200,
+                        notes: 'Arachides pour sauce',
+                        lastUpdated: new Date().toISOString()
+                    }
+                ];
+            }
+            
+            // Load movements
+            const storedMovements = localStorage.getItem('goutDivinStockMovements');
+            if (storedMovements) {
+                stockMovements = JSON.parse(storedMovements);
+            } else {
+                // Default movements
+                stockMovements = [
+                    {
+                        id: 1,
+                        productId: 1,
+                        type: 'in',
+                        quantity: 50,
+                        reference: 'Fournisseur ABC',
+                        reason: 'Livraison hebdomadaire',
+                        date: new Date(Date.now() - 86400000).toISOString()
+                    },
+                    {
+                        id: 2,
+                        productId: 3,
+                        type: 'in',
+                        quantity: 100,
+                        reference: 'Fournisseur Boissons',
+                        reason: 'Commande mensuelle',
+                        date: new Date(Date.now() - 172800000).toISOString()
+                    }
+                ];
+            }
+            
+            // Load categories
+            const storedCategories = localStorage.getItem('goutDivinCategories');
+            if (storedCategories) {
+                categories = JSON.parse(storedCategories);
+            } else {
+                categories = [
+                    { id: 1, name: 'Plats principaux' },
+                    { id: 2, name: 'Boissons' },
+                    { id: 3, name: 'Entrées' }
+                ];
+            }
+            
+            saveToLocalStorage();
+        }
+
+        // Save to localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('goutDivinStockItems', JSON.stringify(stockItems));
+            localStorage.setItem('goutDivinStockMovements', JSON.stringify(stockMovements));
+            localStorage.setItem('goutDivinIngredients', JSON.stringify(ingredients));
+            
+            // Update menu items with new stock
+            const storedMenuItems = localStorage.getItem('goutDivinMenuItems');
+            if (storedMenuItems) {
+                const menuItems = JSON.parse(storedMenuItems);
+                stockItems.forEach(stockItem => {
+                    const menuItem = menuItems.find(item => item.id === stockItem.id);
+                    if (menuItem) {
+                        menuItem.stock = stockItem.currentStock;
+                        menuItem.minStock = stockItem.minStock;
+                    }
+                });
+                localStorage.setItem('goutDivinMenuItems', JSON.stringify(menuItems));
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Movement form
+            document.getElementById('movementForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveMovement();
+            });
+            
+            // Ingredient form
+            document.getElementById('ingredientForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveIngredient();
+            });
+            
+            // Quick update form
+            document.getElementById('quickUpdateForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveQuickUpdate();
+            });
+            
+            // Search and filters
+            document.getElementById('searchInput').addEventListener('input', filterStockItems);
+            document.getElementById('categoryFilter').addEventListener('change', filterStockItems);
+            document.getElementById('statusFilter').addEventListener('change', filterStockItems);
+            
+            // Ingredient search and filters
+            document.getElementById('ingredientSearchInput').addEventListener('input', filterIngredients);
+            document.getElementById('ingredientCategoryFilter').addEventListener('change', filterIngredients);
+            document.getElementById('ingredientStatusFilter').addEventListener('change', filterIngredients);
+            
+            document.getElementById('movementSearch').addEventListener('input', filterMovements);
+            document.getElementById('movementTypeFilter').addEventListener('change', filterMovements);
+            document.getElementById('dateFilter').addEventListener('change', filterMovements);
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Get stock status
+        function getStockStatus(item) {
+            if (item.currentStock <= item.minStock) {
+                return 'critical';
+            } else if (item.currentStock <= item.minStock * 2) {
+                return 'low';
+            } else {
+                return 'normal';
+            }
+        }
+
+        // Render stock grid
+        function renderStockGrid() {
+            const grid = document.getElementById('stockGrid');
+            const filteredItems = getFilteredStockItems();
+            
+            if (filteredItems.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Aucun produit trouvé</div>';
+                return;
+            }
+            
+            grid.innerHTML = filteredItems.map(item => {
+                const status = getStockStatus(item);
+                const progressPercentage = Math.min(100, (item.currentStock / (item.minStock * 3)) * 100);
+                
+                return `
+                    <div class="stock-card ${status}">
+                        <div class="stock-header">
+                            <div>
+                                <div class="stock-name">${item.name}</div>
+                                <span class="stock-category">${item.category}</span>
+                            </div>
+                            <div class="stock-quantity ${status}">${item.currentStock} ${item.unit}</div>
+                        </div>
+                        
+                        <div class="stock-details">
+                            <span>Seuil: ${item.minStock} ${item.unit}</span>
+                            <span>${status === 'critical' ? 'CRITIQUE' : status === 'low' ? 'FAIBLE' : 'NORMAL'}</span>
+                        </div>
+                        
+                        <div class="stock-progress">
+                            <div class="stock-progress-bar ${status}" style="width: ${progressPercentage}%"></div>
+                        </div>
+                        
+                        <div class="stock-actions">
+                            <button class="btn btn-success btn-sm" onclick="openQuickUpdateModal(${item.id})">Mettre à jour</button>
+                            <button class="btn btn-primary btn-sm" onclick="openMovementModalForProduct(${item.id})">Mouvement</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render ingredients
+        function renderIngredients() {
+            const grid = document.getElementById('ingredientsGrid');
+            const filteredIngredients = getFilteredIngredients();
+            
+            if (filteredIngredients.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Aucun ingrédient trouvé</div>';
+                return;
+            }
+            
+            grid.innerHTML = filteredIngredients.map(ingredient => {
+                const status = getStockStatus(ingredient);
+                const progressPercentage = Math.min(100, (ingredient.currentStock / (ingredient.minStock * 3)) * 100);
+                
+                return `
+                    <div class="stock-card ${status}">
+                        <div class="stock-header">
+                            <div>
+                                <div class="stock-name">${ingredient.name}</div>
+                                <span class="stock-category">${ingredient.category}</span>
+                                ${ingredient.supplier ? `<div style="font-size: 0.75rem; color: #6b7280;">Fournisseur: ${ingredient.supplier}</div>` : ''}
+                            </div>
+                            <div class="stock-quantity ${status}">${ingredient.currentStock} ${ingredient.unit}</div>
+                        </div>
+                        
+                        <div class="stock-details">
+                            <span>Seuil: ${ingredient.minStock} ${ingredient.unit}</span>
+                            <span>${status === 'critical' ? 'CRITIQUE' : status === 'low' ? 'FAIBLE' : 'NORMAL'}</span>
+                        </div>
+                        
+                        <div class="stock-progress">
+                            <div class="stock-progress-bar ${status}" style="width: ${progressPercentage}%"></div>
+                        </div>
+                        
+                        ${ingredient.price ? `<div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.75rem;">Prix: ${ingredient.price} FCFA/${ingredient.unit}</div>` : ''}
+                        
+                        <div class="stock-actions">
+                            <button class="btn btn-success btn-sm" onclick="openQuickUpdateIngredientModal(${ingredient.id})">Mettre à jour</button>
+                            <button class="btn btn-secondary btn-sm" onclick="editIngredient(${ingredient.id})">Modifier</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteIngredient(${ingredient.id})">Supprimer</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render movements
+        function renderMovements() {
+            const tbody = document.getElementById('movementsTable');
+            const filteredMovements = getFilteredMovements();
+            
+            if (filteredMovements.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #666;">Aucun mouvement trouvé</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filteredMovements.map(movement => {
+                const product = stockItems.find(item => item.id === movement.productId) || 
+                                 ingredients.find(item => item.id === movement.productId);
+                const productName = product ? product.name : 'Produit inconnu';
+                
+                return `
+                    <tr>
+                        <td>${formatDate(movement.date)}</td>
+                        <td>${productName}</td>
+                        <td><span class="movement-type ${movement.type}">${getMovementTypeLabel(movement.type)}</span></td>
+                        <td>${movement.quantity} ${product ? product.unit : 'unités'}</td>
+                        <td>${movement.reference || '-'}</td>
+                        <td>${movement.reason || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render alerts
+        function renderAlerts() {
+            const grid = document.getElementById('alertsGrid');
+            const criticalItems = [...stockItems, ...ingredients].filter(item => getStockStatus(item) === 'critical');
+            const lowItems = [...stockItems, ...ingredients].filter(item => getStockStatus(item) === 'low');
+            
+            const alertItems = [...criticalItems, ...lowItems];
+            
+            if (alertItems.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Aucune alerte de stock</div>';
+                return;
+            }
+            
+            grid.innerHTML = alertItems.map(item => {
+                const status = getStockStatus(item);
+                
+                return `
+                    <div class="stock-card ${status}">
+                        <div class="stock-header">
+                            <div>
+                                <div class="stock-name">${item.name}</div>
+                                <span class="stock-category">${item.category}</span>
+                            </div>
+                            <div class="stock-quantity ${status}">${item.currentStock} ${item.unit}</div>
+                        </div>
+                        
+                        <div class="stock-details">
+                            <span>Seuil: ${item.minStock} ${item.unit}</span>
+                            <span>${status === 'critical' ? 'URGENT' : 'Attention'}</span>
+                        </div>
+                        
+                        <div style="margin: 0.75rem 0;">
+                            <strong style="color: ${status === 'critical' ? '#d32f2f' : 'var(--dark-yellow)'}">
+                                ${status === 'critical' ? 'Réapprovisionnement requis' : 'Stock faible'}
+                            </strong>
+                        </div>
+                        
+                        <div class="stock-actions">
+                            <button class="btn btn-success btn-sm" onclick="openQuickUpdateModal(${item.id})">Réapprovisionner</button>
+                            <button class="btn btn-primary btn-sm" onclick="openMovementModalForProduct(${item.id})">Ajouter mouvement</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter functions
+        function getFilteredStockItems() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            return stockItems.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(searchTerm);
+                const matchesCategory = !categoryFilter || item.category === categoryFilter;
+                const matchesStatus = !statusFilter || getStockStatus(item) === statusFilter;
+                
+                return matchesSearch && matchesCategory && matchesStatus;
+            });
+        }
+
+        function filterStockItems() {
+            renderStockGrid();
+        }
+
+        function getFilteredIngredients() {
+            const searchTerm = document.getElementById('ingredientSearchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('ingredientCategoryFilter').value;
+            const statusFilter = document.getElementById('ingredientStatusFilter').value;
+            
+            return ingredients.filter(ingredient => {
+                const matchesSearch = ingredient.name.toLowerCase().includes(searchTerm) ||
+                                     (ingredient.supplier && ingredient.supplier.toLowerCase().includes(searchTerm));
+                const matchesCategory = !categoryFilter || ingredient.category === categoryFilter;
+                const matchesStatus = !statusFilter || getStockStatus(ingredient) === statusFilter;
+                
+                return matchesSearch && matchesCategory && matchesStatus;
+            });
+        }
+
+        function filterIngredients() {
+            renderIngredients();
+        }
+
+        function getFilteredMovements() {
+            const searchTerm = document.getElementById('movementSearch').value.toLowerCase();
+            const typeFilter = document.getElementById('movementTypeFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            
+            return stockMovements.filter(movement => {
+                const product = stockItems.find(item => item.id === movement.productId) || 
+                             ingredients.find(item => item.id === movement.productId);
+                const productName = product ? product.name.toLowerCase() : '';
+                
+                const matchesSearch = productName.includes(searchTerm) || 
+                                     (movement.reference && movement.reference.toLowerCase().includes(searchTerm));
+                const matchesType = !typeFilter || movement.type === typeFilter;
+                
+                let matchesDate = true;
+                if (dateFilter) {
+                    const movementDate = new Date(movement.date);
+                    const now = new Date();
+                    
+                    switch (dateFilter) {
+                        case 'today':
+                            matchesDate = movementDate.toDateString() === now.toDateString();
+                            break;
+                        case 'week':
+                            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                            matchesDate = movementDate >= weekAgo;
+                            break;
+                        case 'month':
+                            const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                            matchesDate = movementDate >= monthAgo;
+                            break;
+                    }
+                }
+                
+                return matchesSearch && matchesType && matchesDate;
+            });
+        }
+
+        function filterMovements() {
+            renderMovements();
+        }
+
+        // Update stats
+        function updateStats() {
+            const normalCount = [...stockItems, ...ingredients].filter(item => getStockStatus(item) === 'normal').length;
+            const lowCount = [...stockItems, ...ingredients].filter(item => getStockStatus(item) === 'low').length;
+            const criticalCount = [...stockItems, ...ingredients].filter(item => getStockStatus(item) === 'critical').length;
+            
+            document.querySelector('.stats-grid .stat-value').textContent = stockItems.length;
+            document.querySelectorAll('.stats-grid .stat-value')[1].textContent = ingredients.length;
+            document.querySelectorAll('.stats-grid .stat-value')[2].textContent = criticalCount;
+            
+            // Calculate fill rate
+            const totalStock = [...stockItems, ...ingredients].reduce((sum, item) => sum + item.currentStock, 0);
+            const totalMinStock = [...stockItems, ...ingredients].reduce((sum, item) => sum + item.minStock, 0);
+            const fillRate = totalMinStock > 0 ? Math.round((totalStock / totalMinStock) * 100) : 0;
+            document.querySelectorAll('.stats-grid .stat-value')[3].textContent = fillRate + '%';
+        }
+
+        // Movement modal functions
+        function openMovementModal() {
+            updateProductSelect();
+            document.getElementById('movementForm').reset();
+            document.getElementById('movementModal').classList.add('active');
+        }
+
+        function openMovementModalForProduct(productId) {
+            updateProductSelect();
+            document.getElementById('movementProduct').value = productId;
+            document.getElementById('movementModal').classList.add('active');
+        }
+
+        function closeMovementModal() {
+            document.getElementById('movementModal').classList.remove('active');
+        }
+
+        function updateProductSelect() {
+            const select = document.getElementById('movementProduct');
+            select.innerHTML = '<option value="">Sélectionner un produit</option>';
+            
+            // Add stock items
+            stockItems.forEach(item => {
+                select.innerHTML += `<option value="${item.id}">${item.name} (${item.currentStock} ${item.unit})</option>`;
+            });
+            
+            // Add ingredients
+            ingredients.forEach(item => {
+                select.innerHTML += `<option value="${item.id}">${item.name} (${item.currentStock} ${item.unit})</option>`;
+            });
+        }
+
+        function saveMovement() {
+            const productId = parseInt(document.getElementById('movementProduct').value);
+            const type = document.getElementById('movementType').value;
+            const quantity = parseInt(document.getElementById('movementQuantity').value);
+            const reference = document.getElementById('movementReference').value;
+            const reason = document.getElementById('movementReason').value;
+            
+            // Find the product (could be stock item or ingredient)
+            let product = stockItems.find(item => item.id === productId);
+            let isIngredient = false;
+            
+            if (!product) {
+                product = ingredients.find(item => item.id === productId);
+                isIngredient = true;
+            }
+            
+            if (!product) return;
+            
+            // Update stock
+            if (type === 'in') {
+                product.currentStock += quantity;
+            } else if (type === 'out') {
+                if (product.currentStock < quantity) {
+                    showMessage('Stock insuffisant pour cette sortie', 'error');
+                    return;
+                }
+                product.currentStock -= quantity;
+            } else if (type === 'adjustment') {
+                product.currentStock = quantity;
+            }
+            
+            product.lastUpdated = new Date().toISOString();
+            
+            // Add movement record
+            const movement = {
+                id: Date.now(),
+                productId: productId,
+                type: type,
+                quantity: quantity,
+                reference: reference,
+                reason: reason,
+                date: new Date().toISOString()
+            };
+            
+            stockMovements.unshift(movement);
+            
+            saveToLocalStorage();
+            renderStockGrid();
+            renderIngredients();
+            renderAlerts();
+            updateStats();
+            closeMovementModal();
+            
+            showMessage('Mouvement de stock enregistré avec succès', 'success');
+        }
+
+        // Ingredient modal functions
+        function openIngredientModal() {
+            currentEditIngredient = null;
+            document.getElementById('ingredientModalTitle').textContent = 'Ajouter un ingrédient';
+            document.getElementById('ingredientForm').reset();
+            document.getElementById('ingredientModal').classList.add('active');
+        }
+
+        function closeIngredientModal() {
+            document.getElementById('ingredientModal').classList.remove('active');
+            currentEditIngredient = null;
+        }
+
+        function editIngredient(id) {
+            currentEditIngredient = ingredients.find(ingredient => ingredient.id === id);
+            if (!currentEditIngredient) return;
+            
+            document.getElementById('ingredientModalTitle').textContent = 'Modifier un ingrédient';
+            document.getElementById('ingredientName').value = currentEditIngredient.name;
+            document.getElementById('ingredientCategory').value = currentEditIngredient.category;
+            document.getElementById('ingredientUnit').value = currentEditIngredient.unit;
+            document.getElementById('ingredientCurrentStock').value = currentEditIngredient.currentStock;
+            document.getElementById('ingredientMinStock').value = currentEditIngredient.minStock;
+            document.getElementById('ingredientSupplier').value = currentEditIngredient.supplier || '';
+            document.getElementById('ingredientPrice').value = currentEditIngredient.price || '';
+            document.getElementById('ingredientNotes').value = currentEditIngredient.notes || '';
+            
+            document.getElementById('ingredientModal').classList.add('active');
+        }
+
+        function saveIngredient() {
+            const ingredientData = {
+                name: document.getElementById('ingredientName').value,
+                category: document.getElementById('ingredientCategory').value,
+                unit: document.getElementById('ingredientUnit').value,
+                currentStock: parseFloat(document.getElementById('ingredientCurrentStock').value),
+                minStock: parseFloat(document.getElementById('ingredientMinStock').value) || 5,
+                supplier: document.getElementById('ingredientSupplier').value,
+                price: parseFloat(document.getElementById('ingredientPrice').value) || 0,
+                notes: document.getElementById('ingredientNotes').value,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            if (currentEditIngredient) {
+                // Update existing ingredient
+                Object.assign(currentEditIngredient, ingredientData);
+            } else {
+                // Add new ingredient
+                ingredientData.id = Date.now();
+                ingredients.push(ingredientData);
+            }
+            
+            saveToLocalStorage();
+            renderIngredients();
+            renderAlerts();
+            updateStats();
+            closeIngredientModal();
+            
+            showMessage('Ingrédient enregistré avec succès', 'success');
+        }
+
+        function deleteIngredient(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cet ingrédient ?')) return;
+            
+            ingredients = ingredients.filter(ingredient => ingredient.id !== id);
+            saveToLocalStorage();
+            renderIngredients();
+            renderAlerts();
+            updateStats();
+            
+            showMessage('Ingrédient supprimé avec succès', 'success');
+        }
+
+        // Quick update modal functions
+        function openQuickUpdateModal(id) {
+            currentQuickUpdateItem = stockItems.find(item => item.id === id);
+            if (!currentQuickUpdateItem) return;
+            
+            document.getElementById('quickUpdateProductName').value = currentQuickUpdateItem.name;
+            document.getElementById('quickUpdateCurrentStock').value = currentQuickUpdateItem.currentStock;
+            document.getElementById('quickUpdateQuantity').value = currentQuickUpdateItem.currentStock;
+            document.getElementById('quickUpdateReason').value = '';
+            
+            document.getElementById('quickUpdateModal').classList.add('active');
+        }
+
+        function openQuickUpdateIngredientModal(id) {
+            currentQuickUpdateItem = ingredients.find(item => item.id === id);
+            if (!currentQuickUpdateItem) return;
+            
+            document.getElementById('quickUpdateProductName').value = currentQuickUpdateItem.name;
+            document.getElementById('quickUpdateCurrentStock').value = currentQuickUpdateItem.currentStock;
+            document.getElementById('quickUpdateQuantity').value = currentQuickUpdateItem.currentStock;
+            document.getElementById('quickUpdateReason').value = '';
+            
+            document.getElementById('quickUpdateModal').classList.add('active');
+        }
+
+        function closeQuickUpdateModal() {
+            document.getElementById('quickUpdateModal').classList.remove('active');
+            currentQuickUpdateItem = null;
+        }
+
+        function saveQuickUpdate() {
+            if (!currentQuickUpdateItem) return;
+            
+            const newQuantity = parseInt(document.getElementById('quickUpdateQuantity').value);
+            const reason = document.getElementById('quickUpdateReason').value;
+            const oldQuantity = currentQuickUpdateItem.currentStock;
+            
+            // Update stock
+            currentQuickUpdateItem.currentStock = newQuantity;
+            currentQuickUpdateItem.lastUpdated = new Date().toISOString();
+            
+            // Add movement record
+            const movement = {
+                id: Date.now(),
+                productId: currentQuickUpdateItem.id,
+                type: 'adjustment',
+                quantity: newQuantity,
+                reference: 'Mise à jour rapide',
+                reason: reason || `Mise à jour de ${oldQuantity} à ${newQuantity}`,
+                date: new Date().toISOString()
+            };
+            
+            stockMovements.unshift(movement);
+            
+            saveToLocalStorage();
+            renderStockGrid();
+            renderIngredients();
+            renderAlerts();
+            updateStats();
+            closeQuickUpdateModal();
+            
+            showMessage('Stock mis à jour avec succès', 'success');
+        }
+
+        // Utility functions
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-TG') + ' ' + date.toLocaleTimeString('fr-TG', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function getMovementTypeLabel(type) {
+            switch (type) {
+                case 'in': return 'Entrée';
+                case 'out': return 'Sortie';
+                case 'adjustment': return 'Ajustement';
+                default: return type;
+            }
+        }
+
+        function showMessage(message, type = 'success') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+    </script>
+        </main>
+    </div>
+</body>
+</html>

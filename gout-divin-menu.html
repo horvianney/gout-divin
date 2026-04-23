@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOUT DIVIN - Gestion du Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-green: #2d5016;
+            --secondary-green: #4a7c28;
+            --light-green: #8bc34a;
+            --pale-green: #c8e6c9;
+            --primary-yellow: #ffeb3b;
+            --secondary-yellow: #ffc107;
+            --dark-yellow: #f57c00;
+            --pale-yellow: #fff9c4;
+            --text-dark: #1b1b1b;
+            --text-light: #ffffff;
+            --bg-light: #f5f5f5;
+            --bg-white: #ffffff;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--pale-green) 0%, var(--pale-yellow) 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: var(--text-light);
+            padding: 2rem 0;
+            box-shadow: var(--shadow-hover);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar-nav {
+            padding: 2rem 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: var(--primary-yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+        
+        /* Main Content Wrapper */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+        }
+        
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-green), var(--secondary-green));
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .stat-card.highlight::before {
+            background: linear-gradient(90deg, var(--primary-yellow), var(--secondary-yellow));
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--light-green), var(--secondary-green));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card.highlight .stat-icon {
+            background: linear-gradient(135deg, var(--primary-yellow), var(--dark-yellow));
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card.highlight .stat-value {
+            color: var(--dark-yellow);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Section */
+        .section {
+            background: var(--bg-white);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+        
+        .section-content {
+            padding: 1.5rem;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab {
+            padding: 0.75rem 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .tab:hover {
+            color: var(--primary-green);
+            background: var(--pale-green);
+        }
+        
+        .tab.active {
+            color: var(--primary-green);
+            border-bottom-color: var(--primary-green);
+            background: var(--pale-green);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Search and Filters */
+        .search-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--secondary-green);
+            box-shadow: 0 0 0 3px rgba(76, 124, 40, 0.1);
+        }
+        
+        .filter-select {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            background: var(--bg-white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--secondary-green);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: var(--text-light);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-green), var(--light-green));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(76, 124, 40, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--primary-yellow), var(--secondary-yellow));
+            color: var(--primary-green);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, var(--secondary-yellow), var(--dark-yellow));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #d32f2f, #f44336);
+            color: var(--text-light);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #f44336, #e57373);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: var(--text-light);
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+        
+        /* Items Grid */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .item-card {
+            background: var(--bg-white);
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .item-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-green), var(--secondary-green));
+        }
+        
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--secondary-green);
+        }
+        
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        
+        .item-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 0.25rem;
+        }
+        
+        .item-category {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--pale-green);
+            color: var(--primary-green);
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .item-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--dark-yellow);
+        }
+        
+        .item-description {
+            color: #666;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+        
+        .item-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .item-stock {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .stock-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .stock-badge.normal {
+            background: var(--pale-green);
+            color: var(--primary-green);
+        }
+        
+        .stock-badge.low {
+            background: var(--pale-yellow);
+            color: var(--dark-yellow);
+        }
+        
+        .stock-badge.critical {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .item-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--pale-green);
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #666;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: var(--pale-green);
+            color: var(--primary-green);
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary-green);
+            box-shadow: 0 0 0 3px rgba(76, 124, 40, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Formula Items */
+        .formula-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .formula-item {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--pale-yellow);
+            border-radius: 20px;
+            color: var(--dark-yellow);
+            font-weight: 500;
+        }
+        
+        /* Category Card */
+        .category-card {
+            background: var(--bg-white);
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-yellow), var(--secondary-yellow));
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--secondary-yellow);
+        }
+        
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .category-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+        
+        .category-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #e5e7eb;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .header-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-bar {
+                flex-direction: column;
+            }
+            
+            .search-input {
+                min-width: auto;
+            }
+            
+            .item-actions {
+                flex-direction: column;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        /* Success/Error Messages */
+        .message {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+        
+        .message.success {
+            background: var(--pale-green);
+            color: var(--primary-green);
+            border-left-color: var(--primary-green);
+        }
+        
+        .message.error {
+            background: #ffebee;
+            color: #d32f2f;
+            border-left-color: #d32f2f;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">GD</div>
+                <div class="logo-text">GOUT DIVIN</div>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="gout-divin-dashboard.html" class="nav-item">
+                <div class="nav-icon">«</div>
+                <div class="nav-text">
+                    <div class="nav-title">Dashboard</div>
+                    <div class="nav-description">Vue d'ensemble</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-pos.html" class="nav-item">
+                <div class="nav-icon">+</div>
+                <div class="nav-text">
+                    <div class="nav-title">Point de Vente</div>
+                    <div class="nav-description">Enregistrer les commandes</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-menu.html" class="nav-item active">
+                <div class="nav-icon">«</div>
+                <div class="nav-text">
+                    <div class="nav-title">Menu</div>
+                    <div class="nav-description">Gérer les produits</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-stock.html" class="nav-item">
+                <div class="nav-icon">§</div>
+                <div class="nav-text">
+                    <div class="nav-title">Stock</div>
+                    <div class="nav-description">Gérer les ingrédients</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-clients.html" class="nav-item">
+                <div class="nav-icon">¶</div>
+                <div class="nav-text">
+                    <div class="nav-title">Clients</div>
+                    <div class="nav-description">Gérer la clientèle</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-delivery.html" class="nav-item">
+                <div class="nav-icon">°</div>
+                <div class="nav-text">
+                    <div class="nav-title">Livraisons</div>
+                    <div class="nav-description">Gérer les livraisons</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-reports.html" class="nav-item">
+                <div class="nav-icon">£</div>
+                <div class="nav-text">
+                    <div class="nav-title">Rapports</div>
+                    <div class="nav-description">Exporter les données</div>
+                </div>
+            </a>
+            
+            <a href="gout-divin-settings.html" class="nav-item">
+                <div class="nav-icon">®</div>
+                <div class="nav-text">
+                    <div class="nav-title">Paramètres</div>
+                    <div class="nav-description">Configurer le système</div>
+                </div>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <main class="main-content">
+            <div class="container">
+            <!-- Statistics -->
+            <div class="stats-grid fade-in">
+                <div class="stat-card highlight">
+                    <div class="stat-icon">«</div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Articles au total</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">§</div>
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">Catégories</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">¥</div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Formules</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">!</div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">Stock critique</div>
+                </div>
+            </div>
+
+            <!-- Menu Management Section -->
+            <div class="section fade-in">
+                <div class="section-header">
+                    <h2 class="section-title">Gestion du Menu</h2>
+                    <button class="btn btn-primary" onclick="openAddItemModal()">
+                        <span>+</span> Ajouter un article
+                    </button>
+                </div>
+                
+                <div class="section-content">
+                    <!-- Tabs -->
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab('articles')">Articles</button>
+                        <button class="tab" onclick="switchTab('categories')">Catégories</button>
+                        <button class="tab" onclick="switchTab('formulas')">Formules</button>
+                    </div>
+
+                    <!-- Articles Tab -->
+                    <div id="articles-tab" class="tab-content active">
+                        <div class="search-bar">
+                            <input type="text" class="search-input" placeholder="Rechercher un article..." id="searchInput">
+                            <select class="filter-select" id="categoryFilter">
+                                <option value="">Toutes les catégories</option>
+                            </select>
+                            <select class="filter-select" id="statusFilter">
+                                <option value="">Tous les statuts</option>
+                                <option value="available">Disponible</option>
+                                <option value="unavailable">Indisponible</option>
+                            </select>
+                        </div>
+                        
+                        <div class="items-grid" id="itemsGrid">
+                            <!-- Items will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Categories Tab -->
+                    <div id="categories-tab" class="tab-content">
+                        <button class="btn btn-secondary" onclick="openAddCategoryModal()">
+                            <span>+</span> Ajouter une catégorie
+                        </button>
+                        <div class="items-grid" id="categoriesGrid" style="margin-top: 1.5rem;">
+                            <!-- Categories will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Formulas Tab -->
+                    <div id="formulas-tab" class="tab-content">
+                        <button class="btn btn-secondary" onclick="openAddFormulaModal()">
+                            <span>+</span> Ajouter une formule
+                        </button>
+                        <div class="items-grid" id="formulasGrid" style="margin-top: 1.5rem;">
+                            <!-- Formulas will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Item Modal -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="itemModalTitle">Ajouter un article</h3>
+                <button class="close-btn" onclick="closeItemModal()">&times;</button>
+            </div>
+            
+            <form id="itemForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="itemName">Nom de l'article *</label>
+                        <input type="text" id="itemName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="itemCategory">Catégorie *</label>
+                        <select id="itemCategory" required>
+                            <option value="">Sélectionner une catégorie</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="itemPrice">Prix de vente (FCFA) *</label>
+                        <input type="number" id="itemPrice" min="0" step="100" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="itemCostPrice">Prix de revient (FCFA)</label>
+                        <input type="number" id="itemCostPrice" min="0" step="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="itemStock">Quantité en stock *</label>
+                        <input type="number" id="itemStock" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="itemMinStock">Stock minimum</label>
+                        <input type="number" id="itemMinStock" min="0">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemDescription">Description</label>
+                    <textarea id="itemDescription" placeholder="Description de l'article..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemImage">URL de l'image</label>
+                    <input type="url" id="itemImage" placeholder="https://example.com/image.jpg">
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeItemModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="categoryModalTitle">Ajouter une catégorie</h3>
+                <button class="close-btn" onclick="closeCategoryModal()">&times;</button>
+            </div>
+            
+            <form id="categoryForm">
+                <div class="form-group">
+                    <label for="categoryName">Nom de la catégorie *</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoryDescription">Description</label>
+                    <textarea id="categoryDescription" placeholder="Description de la catégorie..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoryColor">Couleur</label>
+                    <input type="color" id="categoryColor" value="#ffeb3b">
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoryOrder">Ordre d'affichage</label>
+                    <input type="number" id="categoryOrder" min="0" value="0">
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Formula Modal -->
+    <div id="formulaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="formulaModalTitle">Ajouter une formule</h3>
+                <button class="close-btn" onclick="closeFormulaModal()">&times;</button>
+            </div>
+            
+            <form id="formulaForm">
+                <div class="form-group">
+                    <label for="formulaName">Nom de la formule *</label>
+                    <input type="text" id="formulaName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="formulaPrice">Prix de la formule (FCFA) *</label>
+                    <input type="number" id="formulaPrice" min="0" step="100" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="formulaDescription">Description</label>
+                    <textarea id="formulaDescription" placeholder="Description de la formule..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Articles inclus (sélectionnez plusieurs)</label>
+                    <div id="formulaItems" style="max-height: 200px; overflow-y: auto; border: 2px solid #e5e7eb; border-radius: 10px; padding: 1rem;">
+                        <!-- Items will be loaded here -->
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeFormulaModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let items = [];
+        let categories = [];
+        let formulas = [];
+        let currentEditItem = null;
+        let currentEditCategory = null;
+        let currentEditFormula = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkUserSession();
+            loadFromLocalStorage();
+            renderItems();
+            renderCategories();
+            renderFormulas();
+            updateStats();
+            setupEventListeners();
+        });
+
+        // Check user session
+        function checkUserSession() {
+            const storedUser = localStorage.getItem('goutDivinUser');
+            if (!storedUser) {
+                window.location.href = 'gout-divin-login.html';
+                return;
+            }
+            
+            const user = JSON.parse(storedUser);
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            
+            if (userAvatar) userAvatar.textContent = user.name.charAt(0).toUpperCase();
+            if (userName) userName.textContent = user.name;
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+                localStorage.removeItem('goutDivinUser');
+                window.location.href = 'gout-divin-login.html';
+            }
+        }
+
+        // Load data from localStorage
+        function loadFromLocalStorage() {
+            const storedItems = localStorage.getItem('goutDivinMenuItems');
+            const storedCategories = localStorage.getItem('goutDivinCategories');
+            const storedFormulas = localStorage.getItem('goutDivinFormulas');
+            
+            if (storedItems) {
+                items = JSON.parse(storedItems);
+            } else {
+                // Default items for GOUT DIVIN
+                items = [
+                    {
+                        id: 1,
+                        name: 'Riz sauce arachide',
+                        category: 'Plats principaux',
+                        price: 1500,
+                        costPrice: 800,
+                        stock: 50,
+                        minStock: 10,
+                        description: 'Riz accompagné de sauce arachide traditionnelle',
+                        image: '',
+                        available: true
+                    },
+                    {
+                        id: 2,
+                        name: 'Poulet braisé',
+                        category: 'Plats principaux',
+                        price: 2500,
+                        costPrice: 1500,
+                        stock: 30,
+                        minStock: 5,
+                        description: 'Poulet braisé aux épices togolaises',
+                        image: '',
+                        available: true
+                    },
+                    {
+                        id: 3,
+                        name: 'Salade tropicale',
+                        category: 'Entrées',
+                        price: 800,
+                        costPrice: 400,
+                        stock: 40,
+                        minStock: 8,
+                        description: 'Salade fraîche avec fruits tropicaux',
+                        image: '',
+                        available: true
+                    },
+                    {
+                        id: 4,
+                        name: 'Jus de fruits',
+                        category: 'Boissons',
+                        price: 500,
+                        costPrice: 250,
+                        stock: 100,
+                        minStock: 20,
+                        description: 'Jus de fruits frais pressés',
+                        image: '',
+                        available: true
+                    }
+                ];
+            }
+            
+            if (storedCategories) {
+                categories = JSON.parse(storedCategories);
+            } else {
+                categories = [
+                    {
+                        id: 1,
+                        name: 'Plats principaux',
+                        description: 'Plats traditionnels togolais',
+                        color: '#ffeb3b',
+                        order: 1
+                    },
+                    {
+                        id: 2,
+                        name: 'Entrées',
+                        description: 'Entrées et apéritifs',
+                        color: '#8bc34a',
+                        order: 2
+                    },
+                    {
+                        id: 3,
+                        name: 'Boissons',
+                        description: 'Boissons fraîches',
+                        color: '#ffc107',
+                        order: 3
+                    }
+                ];
+            }
+            
+            if (storedFormulas) {
+                formulas = JSON.parse(storedFormulas);
+            } else {
+                formulas = [
+                    {
+                        id: 1,
+                        name: 'Formule Déjeuner',
+                        price: 3500,
+                        description: 'Plat principal + boisson',
+                        items: [1, 4]
+                    },
+                    {
+                        id: 2,
+                        name: 'Formule Complète',
+                        price: 4500,
+                        description: 'Entrée + plat principal + boisson',
+                        items: [3, 1, 4]
+                    }
+                ];
+            }
+            
+            saveToLocalStorage();
+        }
+
+        // Save to localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('goutDivinMenuItems', JSON.stringify(items));
+            localStorage.setItem('goutDivinCategories', JSON.stringify(categories));
+            localStorage.setItem('goutDivinFormulas', JSON.stringify(formulas));
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Item form
+            document.getElementById('itemForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveItem();
+            });
+            
+            // Category form
+            document.getElementById('categoryForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveCategory();
+            });
+            
+            // Formula form
+            document.getElementById('formulaForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveFormula();
+            });
+            
+            // Search and filters
+            document.getElementById('searchInput').addEventListener('input', filterItems);
+            document.getElementById('categoryFilter').addEventListener('change', filterItems);
+            document.getElementById('statusFilter').addEventListener('change', filterItems);
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Render items
+        function renderItems() {
+            const grid = document.getElementById('itemsGrid');
+            const filteredItems = getFilteredItems();
+            
+            if (filteredItems.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Aucun article trouvé</div>';
+                return;
+            }
+            
+            grid.innerHTML = filteredItems.map(item => {
+                const stockStatus = item.stock <= item.minStock ? 'critical' : item.stock <= item.minStock * 2 ? 'low' : 'normal';
+                
+                return `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <div>
+                                <div class="item-title">${item.name}</div>
+                                <span class="item-category">${item.category}</span>
+                            </div>
+                            <div class="item-price">${item.price.toLocaleString()} FCFA</div>
+                        </div>
+                        <div class="item-description">${item.description || 'Aucune description'}</div>
+                        <div class="item-meta">
+                            <span class="item-stock">
+                                Stock: <span class="stock-badge ${stockStatus}">${item.stock}</span>
+                            </span>
+                            <span>Seuil: ${item.minStock}</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="editItem(${item.id})">Modifier</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteItem(${item.id})">Supprimer</button>
+                            <button class="btn ${item.available ? 'btn-success' : 'btn-secondary'} btn-sm" onclick="toggleAvailability(${item.id})">
+                                ${item.available ? 'Disponible' : 'Indisponible'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render categories
+        function renderCategories() {
+            const grid = document.getElementById('categoriesGrid');
+            
+            if (categories.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Aucune catégorie trouvée</div>';
+                return;
+            }
+            
+            grid.innerHTML = categories.map(category => `
+                <div class="category-card">
+                    <div class="category-header">
+                        <div class="category-title">${category.name}</div>
+                        <div class="category-color" style="background: ${category.color};"></div>
+                    </div>
+                    <div class="item-description">${category.description || 'Aucune description'}</div>
+                    <div class="item-meta">
+                        <span>Ordre: ${category.order}</span>
+                        <span>${items.filter(item => item.category === category.name).length} articles</span>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="editCategory(${category.id})">Modifier</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteCategory(${category.id})">Supprimer</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render formulas
+        function renderFormulas() {
+            const grid = document.getElementById('formulasGrid');
+            
+            if (formulas.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Aucune formule trouvée</div>';
+                return;
+            }
+            
+            grid.innerHTML = formulas.map(formula => {
+                const formulaItems = items.filter(item => formula.items.includes(item.id));
+                
+                return `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <div class="item-title">${formula.name}</div>
+                            <div class="item-price">${formula.price.toLocaleString()} FCFA</div>
+                        </div>
+                        <div class="item-description">${formula.description || 'Aucune description'}</div>
+                        <div class="formula-items">
+                            ${formulaItems.map(item => `<span class="formula-item">${item.name}</span>`).join('')}
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="editFormula(${formula.id})">Modifier</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteFormula(${formula.id})">Supprimer</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter items
+        function getFilteredItems() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            return items.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(searchTerm) || 
+                                     (item.description && item.description.toLowerCase().includes(searchTerm));
+                const matchesCategory = !categoryFilter || item.category === categoryFilter;
+                const matchesStatus = !statusFilter || 
+                                    (statusFilter === 'available' && item.available) ||
+                                    (statusFilter === 'unavailable' && !item.available);
+                
+                return matchesSearch && matchesCategory && matchesStatus;
+            });
+        }
+
+        function filterItems() {
+            renderItems();
+        }
+
+        // Update stats
+        function updateStats() {
+            document.querySelector('.stats-grid .stat-value').textContent = items.length;
+            document.querySelectorAll('.stats-grid .stat-value')[1].textContent = categories.length;
+            document.querySelectorAll('.stats-grid .stat-value')[2].textContent = formulas.length;
+            document.querySelectorAll('.stats-grid .stat-value')[3].textContent = items.filter(item => item.stock <= item.minStock).length;
+        }
+
+        // Update category filter
+        function updateCategoryFilter() {
+            const filter = document.getElementById('categoryFilter');
+            filter.innerHTML = '<option value="">Toutes les catégories</option>';
+            
+            categories.forEach(category => {
+                filter.innerHTML += `<option value="${category.name}">${category.name}</option>`;
+            });
+        }
+
+        // Item modal functions
+        function openAddItemModal() {
+            currentEditItem = null;
+            document.getElementById('itemModalTitle').textContent = 'Ajouter un article';
+            document.getElementById('itemForm').reset();
+            updateCategoryFilter();
+            document.getElementById('itemModal').classList.add('active');
+        }
+
+        function closeItemModal() {
+            document.getElementById('itemModal').classList.remove('active');
+        }
+
+        function editItem(id) {
+            currentEditItem = items.find(item => item.id === id);
+            if (!currentEditItem) return;
+            
+            document.getElementById('itemModalTitle').textContent = 'Modifier un article';
+            document.getElementById('itemName').value = currentEditItem.name;
+            document.getElementById('itemCategory').value = currentEditItem.category;
+            document.getElementById('itemPrice').value = currentEditItem.price;
+            document.getElementById('itemCostPrice').value = currentEditItem.costPrice || '';
+            document.getElementById('itemStock').value = currentEditItem.stock;
+            document.getElementById('itemMinStock').value = currentEditItem.minStock || '';
+            document.getElementById('itemDescription').value = currentEditItem.description || '';
+            document.getElementById('itemImage').value = currentEditItem.image || '';
+            
+            updateCategoryFilter();
+            document.getElementById('itemModal').classList.add('active');
+        }
+
+        function saveItem() {
+            const itemData = {
+                name: document.getElementById('itemName').value,
+                category: document.getElementById('itemCategory').value,
+                price: parseInt(document.getElementById('itemPrice').value),
+                costPrice: parseInt(document.getElementById('itemCostPrice').value) || 0,
+                stock: parseInt(document.getElementById('itemStock').value),
+                minStock: parseInt(document.getElementById('itemMinStock').value) || 0,
+                description: document.getElementById('itemDescription').value,
+                image: document.getElementById('itemImage').value,
+                available: true
+            };
+            
+            if (currentEditItem) {
+                Object.assign(currentEditItem, itemData);
+            } else {
+                itemData.id = Date.now();
+                items.push(itemData);
+            }
+            
+            saveToLocalStorage();
+            renderItems();
+            updateStats();
+            closeItemModal();
+            
+            showMessage('Article enregistré avec succès', 'success');
+        }
+
+        function deleteItem(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) return;
+            
+            items = items.filter(item => item.id !== id);
+            
+            formulas.forEach(formula => {
+                formula.items = formula.items.filter(itemId => itemId !== id);
+            });
+            
+            saveToLocalStorage();
+            renderItems();
+            renderFormulas();
+            updateStats();
+            
+            showMessage('Article supprimé avec succès', 'success');
+        }
+
+        function toggleAvailability(id) {
+            const item = items.find(item => item.id === id);
+            if (item) {
+                item.available = !item.available;
+                saveToLocalStorage();
+                renderItems();
+                showMessage(`Article ${item.available ? 'disponible' : 'indisponible'}`, 'success');
+            }
+        }
+
+        // Category modal functions
+        function openAddCategoryModal() {
+            currentEditCategory = null;
+            document.getElementById('categoryModalTitle').textContent = 'Ajouter une catégorie';
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryColor').value = '#ffeb3b';
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('active');
+        }
+
+        function editCategory(id) {
+            currentEditCategory = categories.find(category => category.id === id);
+            if (!currentEditCategory) return;
+            
+            document.getElementById('categoryModalTitle').textContent = 'Modifier une catégorie';
+            document.getElementById('categoryName').value = currentEditCategory.name;
+            document.getElementById('categoryDescription').value = currentEditCategory.description || '';
+            document.getElementById('categoryColor').value = currentEditCategory.color;
+            document.getElementById('categoryOrder').value = currentEditCategory.order;
+            
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function saveCategory() {
+            const categoryData = {
+                name: document.getElementById('categoryName').value,
+                description: document.getElementById('categoryDescription').value,
+                color: document.getElementById('categoryColor').value,
+                order: parseInt(document.getElementById('categoryOrder').value) || 0
+            };
+            
+            if (currentEditCategory) {
+                Object.assign(currentEditCategory, categoryData);
+            } else {
+                categoryData.id = Date.now();
+                categories.push(categoryData);
+            }
+            
+            saveToLocalStorage();
+            renderCategories();
+            updateCategoryFilter();
+            closeCategoryModal();
+            
+            showMessage('Catégorie enregistrée avec succès', 'success');
+        }
+
+        function deleteCategory(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) return;
+            
+            categories = categories.filter(category => category.id !== id);
+            saveToLocalStorage();
+            renderCategories();
+            updateCategoryFilter();
+            updateStats();
+            
+            showMessage('Catégorie supprimée avec succès', 'success');
+        }
+
+        // Formula modal functions
+        function openAddFormulaModal() {
+            currentEditFormula = null;
+            document.getElementById('formulaModalTitle').textContent = 'Ajouter une formule';
+            document.getElementById('formulaForm').reset();
+            updateFormulaItems();
+            document.getElementById('formulaModal').classList.add('active');
+        }
+
+        function closeFormulaModal() {
+            document.getElementById('formulaModal').classList.remove('active');
+        }
+
+        function editFormula(id) {
+            currentEditFormula = formulas.find(formula => formula.id === id);
+            if (!currentEditFormula) return;
+            
+            document.getElementById('formulaModalTitle').textContent = 'Modifier une formule';
+            document.getElementById('formulaName').value = currentEditFormula.name;
+            document.getElementById('formulaPrice').value = currentEditFormula.price;
+            document.getElementById('formulaDescription').value = currentEditFormula.description || '';
+            
+            updateFormulaItems();
+            
+            currentEditFormula.items.forEach(itemId => {
+                const checkbox = document.querySelector(`input[name="formulaItem"][value="${itemId}"]`);
+                if (checkbox) checkbox.checked = true;
+            });
+            
+            document.getElementById('formulaModal').classList.add('active');
+        }
+
+        function updateFormulaItems() {
+            const container = document.getElementById('formulaItems');
+            container.innerHTML = items.map(item => `
+                <label style="display: block; margin-bottom: 0.5rem;">
+                    <input type="checkbox" name="formulaItem" value="${item.id}" style="margin-right: 0.5rem;">
+                    ${item.name} - ${item.price.toLocaleString()} FCFA
+                </label>
+            `).join('');
+        }
+
+        function saveFormula() {
+            const formulaData = {
+                name: document.getElementById('formulaName').value,
+                price: parseInt(document.getElementById('formulaPrice').value),
+                description: document.getElementById('formulaDescription').value,
+                items: Array.from(document.querySelectorAll('input[name="formulaItem"]:checked')).map(cb => parseInt(cb.value))
+            };
+            
+            if (currentEditFormula) {
+                Object.assign(currentEditFormula, formulaData);
+            } else {
+                formulaData.id = Date.now();
+                formulas.push(formulaData);
+            }
+            
+            saveToLocalStorage();
+            renderFormulas();
+            closeFormulaModal();
+            
+            showMessage('Formule enregistrée avec succès', 'success');
+        }
+
+        function deleteFormula(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette formule ?')) return;
+            
+            formulas = formulas.filter(formula => formula.id !== id);
+            saveToLocalStorage();
+            renderFormulas();
+            updateStats();
+            
+            showMessage('Formule supprimée avec succès', 'success');
+        }
+
+        // Utility functions
+        function showMessage(message, type = 'success') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            
+            document.querySelector('.main-content').insertBefore(messageDiv, document.querySelector('.main-content').firstChild);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+    </script>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOUT DIVIN - Connexion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-green: #2d5016;
+            --secondary-green: #4a7c28;
+            --light-green: #8bc34a;
+            --pale-green: #c8e6c9;
+            --primary-yellow: #ffeb3b;
+            --secondary-yellow: #ffc107;
+            --dark-yellow: #f57c00;
+            --pale-yellow: #fff9c4;
+            --text-dark: #1b1b1b;
+            --text-light: #ffffff;
+            --bg-light: #f5f5f5;
+            --bg-white: #ffffff;
+            --shadow: 0 4px 20px rgba(0,0,0,0.1);
+            --shadow-hover: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--pale-green) 0%, var(--pale-yellow) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Background decorations */
+        .bg-decoration {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+        
+        .bg-decoration-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--primary-green);
+            top: -200px;
+            left: -200px;
+        }
+        
+        .bg-decoration-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--primary-yellow);
+            bottom: -150px;
+            right: -150px;
+        }
+        
+        .bg-decoration-3 {
+            width: 200px;
+            height: 200px;
+            background: var(--secondary-green);
+            top: 50%;
+            right: 10%;
+        }
+        
+        /* Login container */
+        .login-container {
+            background: var(--bg-white);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 450px;
+            padding: 3rem;
+            position: relative;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        
+        .login-container:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
+        }
+        
+        /* Logo section */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-yellow), var(--secondary-yellow));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-green);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+        
+        .restaurant-name {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+        
+        .tagline {
+            color: #666;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+        
+        /* Form styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--bg-white);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--secondary-green);
+            box-shadow: 0 0 0 3px rgba(76, 124, 40, 0.1);
+        }
+        
+        .password-wrapper {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 1.2rem;
+        }
+        
+        .toggle-password:hover {
+            color: var(--secondary-green);
+        }
+        
+        /* Submit button */
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: var(--text-light);
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .submit-btn:hover {
+            background: linear-gradient(135deg, var(--secondary-green), var(--light-green));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(76, 124, 40, 0.3);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Demo accounts */
+        .demo-accounts {
+            background: var(--pale-yellow);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .demo-title {
+            font-weight: 600;
+            color: var(--dark-yellow);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .demo-account {
+            background: var(--bg-white);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid var(--secondary-yellow);
+        }
+        
+        .demo-account:last-child {
+            margin-bottom: 0;
+        }
+        
+        .demo-role {
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 0.25rem;
+        }
+        
+        .demo-credentials {
+            font-size: 0.85rem;
+            color: #666;
+            font-family: monospace;
+        }
+        
+        /* Footer links */
+        .footer-links {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .footer-link {
+            color: var(--secondary-green);
+            text-decoration: none;
+            margin: 0 1rem;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: var(--primary-green);
+        }
+        
+        /* Loading state */
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--pale-green);
+            border-top: 3px solid var(--primary-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Error message */
+        .error-message {
+            background: #ffebee;
+            color: #d32f2f;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #d32f2f;
+            display: none;
+        }
+        
+        .success-message {
+            background: var(--pale-green);
+            color: var(--primary-green);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary-green);
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 1rem;
+                padding: 2rem;
+            }
+            
+            .restaurant-name {
+                font-size: 1.5rem;
+            }
+            
+            .logo {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background decorations -->
+    <div class="bg-decoration bg-decoration-1"></div>
+    <div class="bg-decoration bg-decoration-2"></div>
+    <div class="bg-decoration bg-decoration-3"></div>
+
+    <!-- Login container -->
+    <div class="login-container">
+        <!-- Logo section -->
+        <div class="logo-section">
+            <div class="logo">GD</div>
+            <h1 class="restaurant-name">GOUT DIVIN</h1>
+            <p class="tagline">L'excellence culinaire à votre portée</p>
+        </div>
+
+        <!-- Login form -->
+        <form id="loginForm">
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <div class="form-group">
+                <label class="form-label" for="email">Email</label>
+                <input type="email" id="email" class="form-input" placeholder="manager@goutdivin.tg" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="password">Mot de passe</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" class="form-input" placeholder="Votre mot de passe" required>
+                    <button type="button" class="toggle-password" id="togglePassword">Ù</button>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn" id="loginBtn">Se connecter</button>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Connexion en cours...</p>
+            </div>
+        </form>
+
+        <!-- Demo accounts -->
+        <div class="demo-accounts">
+            <h3 class="demo-title">Comptes de démonstration</h3>
+            
+            <div class="demo-account">
+                <div class="demo-role">Manager</div>
+                <div class="demo-credentials">manager@goutdivin.tg / manager123</div>
+            </div>
+            
+            <div class="demo-account">
+                <div class="demo-role">Caissier</div>
+                <div class="demo-credentials">caissier@goutdivin.tg / caissier123</div>
+            </div>
+            
+            <div class="demo-account">
+                <div class="demo-role">Cuisinier</div>
+                <div class="demo-credentials">cuisinier@goutdivin.tg / cuisinier123</div>
+            </div>
+        </div>
+
+        <!-- Footer links -->
+        <div class="footer-links">
+            <a href="#" class="footer-link">Mot de passe oublié?</a>
+            <a href="#" class="footer-link">Aide</a>
+            <a href="#" class="footer-link">À propos</a>
+        </div>
+    </div>
+
+    <script>
+        // Login functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const togglePassword = document.getElementById('togglePassword');
+            const loginBtn = document.getElementById('loginBtn');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+
+            // Toggle password visibility
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                this.textContent = type === 'password' ? 'Ù' : 'Ú';
+            });
+
+            // Demo account quick fill
+            document.querySelectorAll('.demo-account').forEach(account => {
+                account.addEventListener('click', function() {
+                    const credentials = this.querySelector('.demo-credentials').textContent;
+                    const [email, password] = credentials.split(' / ');
+                    emailInput.value = email;
+                    passwordInput.value = password;
+                    
+                    // Highlight the selected demo account
+                    document.querySelectorAll('.demo-account').forEach(acc => {
+                        acc.style.background = 'var(--bg-white)';
+                    });
+                    this.style.background = 'var(--pale-green)';
+                });
+            });
+
+            // Handle login
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = emailInput.value;
+                const password = passwordInput.value;
+                
+                // Show loading
+                loginBtn.style.display = 'none';
+                loading.style.display = 'block';
+                hideMessages();
+                
+                try {
+                    // Simulate API call
+                    await simulateLogin(email, password);
+                    
+                    // Show success message
+                    showSuccess('Connexion réussie! Redirection...');
+                    
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = 'gout-divin-dashboard.html';
+                    }, 1500);
+                    
+                } catch (error) {
+                    showError(error.message);
+                    loginBtn.style.display = 'block';
+                    loading.style.display = 'none';
+                }
+            });
+
+            // Simulate login API
+            function simulateLogin(email, password) {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        // Demo users
+                        const users = [
+                            { email: 'manager@goutdivin.tg', password: 'manager123', role: 'manager' },
+                            { email: 'caissier@goutdivin.tg', password: 'caissier123', role: 'cashier' },
+                            { email: 'cuisinier@goutdivin.tg', password: 'cuisinier123', role: 'cook' }
+                        ];
+                        
+                        const user = users.find(u => u.email === email && u.password === password);
+                        
+                        if (user) {
+                            // Store user session
+                            localStorage.setItem('goutDivinUser', JSON.stringify({
+                                email: user.email,
+                                role: user.role,
+                                name: user.role === 'manager' ? 'Manager' : user.role === 'cashier' ? 'Caissier' : 'Cuisinier'
+                            }));
+                            resolve(user);
+                        } else {
+                            reject(new Error('Email ou mot de passe incorrect'));
+                        }
+                    }, 1500); // Simulate network delay
+                });
+            }
+
+            // Message functions
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+            }
+
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+            }
+
+            function hideMessages() {
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+            }
+
+            // Check if already logged in
+            const storedUser = localStorage.getItem('goutDivinUser');
+            if (storedUser) {
+                window.location.href = 'gout-divin-dashboard.html';
+            }
+
+            // Add enter key support for demo accounts
+            document.querySelectorAll('.demo-account').forEach(account => {
+                account.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        loginForm.dispatchEvent(new Event('submit'));
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
