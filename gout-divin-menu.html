@@ -138,6 +138,27 @@
             transform: translateX(5px);
         }
         
+        .nav-item.active {
+            background: rgba(255,255,255,0.15);
+            border-left: 4px solid var(--primary-yellow);
+        }
+        
+        .nav-item.active .nav-icon {
+            background: var(--primary-yellow);
+            color: var(--primary-green);
+        }
+        
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
         .user-avatar {
             width: 35px;
             height: 35px;
@@ -885,25 +906,25 @@
             <div class="stats-grid fade-in">
                 <div class="stat-card highlight">
                     <div class="stat-icon">«</div>
-                    <div class="stat-value">24</div>
+                    <div class="stat-value">0</div>
                     <div class="stat-label">Articles au total</div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-icon">§</div>
-                    <div class="stat-value">6</div>
+                    <div class="stat-value">0</div>
                     <div class="stat-label">Catégories</div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-icon">¥</div>
-                    <div class="stat-value">3</div>
+                    <div class="stat-value">0</div>
                     <div class="stat-label">Formules</div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-icon">!</div>
-                    <div class="stat-value">2</div>
+                    <div class="stat-value">0</div>
                     <div class="stat-label">Stock critique</div>
                 </div>
             </div>

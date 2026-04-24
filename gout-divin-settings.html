@@ -1131,6 +1131,39 @@
             showMessage('Compte créé avec succès!', 'success');
         }
         
+        // Message notification function
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                color: white;
+                font-weight: 600;
+                z-index: 10000;
+                transition: all 0.3s ease;
+                background: ${type === 'success' ? '#4a7c28' : type === 'error' ? '#dc3545' : '#ffc107'};
+            `;
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+            
+            // Animation
+            messageDiv.style.transform = 'translateX(100%)';
+            messageDiv.style.opacity = '0';
+            setTimeout(() => {
+                messageDiv.style.transform = 'translateX(0)';
+                messageDiv.style.opacity = '1';
+            }, 10);
+            
+            setTimeout(() => {
+                messageDiv.style.transform = 'translateX(100%)';
+                messageDiv.style.opacity = '0';
+                setTimeout(() => messageDiv.remove(), 300);
+            }, 3000);
+        }
+        
         function resetCounters() {
             const resetPassword = document.getElementById('resetPassword').value;
             

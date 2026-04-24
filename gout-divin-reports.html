@@ -772,19 +772,27 @@
         }
         
         function loadReportData() {
-            // Simulate data - in real app, this would come from API
-            document.getElementById('totalSales').textContent = '2,450,000 FCFA';
-            document.getElementById('transactionCount').textContent = '156';
-            document.getElementById('avgBasket').textContent = '15,700 FCFA';
-            document.getElementById('topProducts').textContent = 'Riz sauce arachide';
-            document.getElementById('lowStock').textContent = '3 articles';
-            document.getElementById('stockValue').textContent = '1,200,000 FCFA';
-            document.getElementById('newClients').textContent = '12';
-            document.getElementById('loyalClients').textContent = '45';
-            document.getElementById('totalClients').textContent = '127';
-            document.getElementById('totalRevenue').textContent = '2,450,000 FCFA';
-            document.getElementById('totalExpenses').textContent = '850,000 FCFA';
-            document.getElementById('netProfit').textContent = '1,600,000 FCFA';
+            // Load real data from localStorage or display zeros
+            const sales = JSON.parse(localStorage.getItem('goutDivinSales') || '[]');
+            const clients = JSON.parse(localStorage.getItem('goutDivinClients') || '[]');
+            
+            // Calculate totals
+            const totalSalesAmount = sales.reduce((sum, sale) => sum + (sale.total || 0), 0);
+            const transactionCount = sales.length;
+            const avgBasket = transactionCount > 0 ? Math.round(totalSalesAmount / transactionCount) : 0;
+            
+            document.getElementById('totalSales').textContent = totalSalesAmount.toLocaleString() + ' FCFA';
+            document.getElementById('transactionCount').textContent = transactionCount;
+            document.getElementById('avgBasket').textContent = avgBasket.toLocaleString() + ' FCFA';
+            document.getElementById('topProducts').textContent = '-';
+            document.getElementById('lowStock').textContent = '-';
+            document.getElementById('stockValue').textContent = '0 FCFA';
+            document.getElementById('newClients').textContent = '0';
+            document.getElementById('loyalClients').textContent = '0';
+            document.getElementById('totalClients').textContent = clients.length;
+            document.getElementById('totalRevenue').textContent = totalSalesAmount.toLocaleString() + ' FCFA';
+            document.getElementById('totalExpenses').textContent = '0 FCFA';
+            document.getElementById('netProfit').textContent = totalSalesAmount.toLocaleString() + ' FCFA';
         }
         
         function exportSales() {
